@@ -1,0 +1,3 @@
+class patternToken extends Token{
+    
+}
