@@ -1,0 +1,3 @@
+class ConditionNode implements Node{
+    
+}

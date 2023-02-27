@@ -1,0 +1,5 @@
+class StatNode implements Node{
+
+    
+
+}
