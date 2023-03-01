@@ -1,6 +1,6 @@
+package ast;
 
-
-public class CaseNode{
+public class CaseNode{ // case x:
 
     protected Symbol name;
     protected ExprNode expr;

@@ -1,4 +1,6 @@
-public class IfNode extends ExprNode{
+package ast;
+
+public class IfNode extends ExprNode{ // if x
 
     protected ExprNode condition;
     private ExprNode ifBranch;

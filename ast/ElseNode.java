@@ -1,4 +1,6 @@
-public class ElseNode extends ExprNode{
+package ast;
+
+public class ElseNode extends ExprNode{ // else 
     
     private IfNode preceeder;
     private ExprNode expr;

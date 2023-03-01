@@ -1,6 +1,8 @@
+package ast;
+
 import java.util.List;
 
-public class SwitchNode extends ExprNode{
+public class SwitchNode extends ExprNode{ // switch (case)
 
     protected ExprNode expr;
     public List<CaseNode> cases;

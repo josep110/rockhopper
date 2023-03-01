@@ -1,4 +1,6 @@
-public class ElifNode extends IfNode{
+package ast;
+
+public class ElifNode extends IfNode{ // elif x
 
     private IfNode preceeder;
 

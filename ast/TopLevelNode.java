@@ -1,4 +1,4 @@
-public class TopLevelNode extends Node{
+public class TopLevelNode extends Node{ // Tops a tree.
 
     List<FuncNode> functions = new LinkedList<FuncNode>();
 

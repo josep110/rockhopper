@@ -1,4 +1,6 @@
-public abstract class OperatorNode extends ExprNode{
+package ast;
+
+public abstract class OperatorNode extends ExprNode{ // +, -, /, * etc.
 
     private ExprNode first;
     private ExprNode second;

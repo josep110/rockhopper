@@ -1,4 +1,6 @@
-public class Symbol extends Node {
+package ast;
+
+public class Symbol extends Node { // Identifiers etc.
 
     private String name;
     private int index;

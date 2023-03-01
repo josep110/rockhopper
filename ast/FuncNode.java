@@ -1,4 +1,4 @@
-public class FuncNode extends Node {
+public class FuncNode extends Node {  // func(x){}
 
     private Symbol name;
     private Symbol returnType;

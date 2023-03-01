@@ -1,4 +1,6 @@
-public abstract class ExprNode extends Node {
+package ast;
+
+public abstract class ExprNode extends Node { // 
     private Symbol type;
 
     protected ExprNode(int no){ super(no); }

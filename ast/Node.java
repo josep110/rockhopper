@@ -1,4 +1,6 @@
-public abstract class Node{ // this will be extended by Node types
+package ast;
+
+public abstract class Node implements SyntaxTree{ // this will be extended by Node types
     
     private int no;
     
