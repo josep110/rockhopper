@@ -4,8 +4,9 @@ class Statement{
 
     ArrayList<Token> contained;
     int length;
+    int no;
 
-    Statement(){ this.contained = new ArrayList<Token>(); length = 0;}
+    Statement(int no){ this.contained = new ArrayList<Token>(); this.length = 0; this.no=no;}
 
     Statement(ArrayList<Token> contained){ this.contained = contained; length = contained.size(); }
 
@@ -21,5 +22,9 @@ class Statement{
             return out; 
         }
         return null;
+    }
+
+    public int getNo(){
+        return this.no;
     }
 } 

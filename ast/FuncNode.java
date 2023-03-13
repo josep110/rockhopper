@@ -3,6 +3,7 @@ public class FuncNode extends Node {  // func(x){}
     private Symbol name;
     private Symbol returnType;
     private ExprNode args;
+    private ExprNode body;
 
     public Symbol getName(){ return name; }
 
@@ -15,6 +16,7 @@ public class FuncNode extends Node {  // func(x){}
         this.name = name;
         this.returnType = returnType;
         this.args = args;
+        this.body = body;
     }   
 
 

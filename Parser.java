@@ -1,6 +1,25 @@
-
+import ast.*;
 
 public class Parser{
+
+
+    SyntaxTree ast;
+    Iterator<Statement> iter_statements;
+
+    Parser(ArrayList<Statement> statements){
+
+        ast = new TopLevelNode(0);
+        iter_statements = new Iterator<Statement> statements.iterator();
+    
+        
+    }
+
+    public static final int 
+            INT=1, STRING=2, FLOAT=3, BOOLEAN=4, LEFTPAR=5, RIGHTPAR=6, LEFTBR=7, RIGHTBR=8,
+            IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
+            SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
+            AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
+            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43;
 
     Statement current;
     String current_type;
@@ -9,8 +28,6 @@ public class Parser{
 
     final String[] terminals = new String[]{"var","+","-","/","*","(","{",")","}",
     "==","<",">","^","%",">>","<<","&","~","#","!","if"};
-
-    Parser(){}
 
     SyntaxTree generateAST(ArrayList<Statement> statements){
         
@@ -42,12 +59,41 @@ public class Parser{
     }
 
 
+// recursive descent.
+
+    private SyntaxTree TOP(Iterator<Statement> statements, SyntaxTree ast) throws ParsingError{
+        boolean parsingFunct = false;
+        ArrayList<Statement> functionStats = new ArrayList<Statement>();
+        SyntaxTree newAST = new TopLevelNode();
+        Statement current;
+
+        while (statements.hasNext()){
+            current = statements.next();
+            if (current.pop(i).getType()==FUNCT_ID){
+                if (current.pop)
+                functionStats.add(current);
+
+            } else {
+                if (current.pop(i).getType()==FUNCT_ID){
+                    parsingFunct = true;
+
+                } else {
+                    throw new ParsingError(current.getNo(),"Statement outside of function.")
+                }
+            }
+        }
+    }
+
+    private Node FUNC(ArrayList<Statement> statements){
+        return FuncNode()
+    }
 
     private Node S(SyntaxTree st){
 
     }
 
     private Node X(SyntaxTree st){
+        
 
     }
 
@@ -73,7 +119,7 @@ public class Parser{
 
     private Node F(SyntaxTree st){}
 
-    private Node FUNC(SyntaxTree st){}
+    
     
     private Node SET(SyntaxTree st){}
 
