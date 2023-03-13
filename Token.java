@@ -1,33 +1,22 @@
 import java.util.regex.Pattern;
+//import java.lang.Integer;
 
 class Token{
     
-    String type;
+    int type;
+    int group;
     String repr;
+    boolean term;
+    int ln;
     
-    Token(String repr, Pattern p){
+    Token(int type, int group, String repr, int ln){
+        this.type = type;
+        this.group = group;
         this.repr = repr;
-        type = setType(p);
+        this.ln = ln;
     }
 
-    String setType(Pattern p){
-        String re = p.pattern();
+    public int getType(){ return this.type; }
 
-        switch(re){
-            case "\'[a-zA-Z0-9]+\'": return "STR";
-            case "\"[a-zA-Z0-9]+\"": return "STR";
-            case "[a-z][a-zA-Z]+": return "ID";
-            case "[0-9]+": return "INT";
-            case "[0-9]+.[0-9]+": return "FLOAT";
-            case "\\{": return "LEFTBR";
-            case "\\}": return "RIGHTBR";
-            case "\\(": return "LEFTPAR";
-            case "\\)": return "RIGHTPAR";
-        }
-        return "OPER";
-    }
-
-    public String getType(){ return this.type; }
-
-    public String toString(){ return "Type: " + this.type + " \t Repr: " + this.repr; }
+    public String toString(){ return "Type: " + this.type + " \t Repr: " + this.repr + " \t Line no. : " + Integer.toString(this.ln); }
 }

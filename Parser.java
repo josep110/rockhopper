@@ -2,16 +2,32 @@
 
 public class Parser{
 
-    Node current;
+    Statement current;
+    String current_type;
     int currentNo;
+    Token tok;
+
+    final String[] terminals = new String[]{"var","+","-","/","*","(","{",")","}",
+    "==","<",">","^","%",">>","<<","&","~","#","!","if"};
 
     Parser(){}
 
-    SyntaxTree generateAST(ArrayList<Token> tokens){
+    SyntaxTree generateAST(ArrayList<Statement> statements){
         
-        try{}
+        try{
+            for (int i = 0; i < statements.size(); i++){
+
+                current = statements.get(i);
+                while(current.size() > 0){
+                    tok = current.pop(0);
+                     
+                }                
+                
+
+            }
+        }
         catch(Exception e){
-            throw new SyntaxError(no);
+            throw new SyntaxError(currentNo);
         }
 
     }
@@ -20,7 +36,20 @@ public class Parser{
 
     }
 
-    private Node X(SyntaxTree st){}
+    private void terminalMatch(Token tok) throws SyntaxError{
+        if (current==tok){ current = current.next();}
+        else { throw new SyntaxError(); }
+    }
+
+
+
+    private Node S(SyntaxTree st){
+
+    }
+
+    private Node X(SyntaxTree st){
+
+    }
 
     private Node K(SyntaxTree st){}
 

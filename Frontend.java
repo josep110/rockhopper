@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.ArrayList;
+
 
 public class Frontend{
 
@@ -7,9 +9,12 @@ public class Frontend{
         Lexer lex = new Lexer();
 
         if (args.length == 0) { System.out.println("Usage: java Frontend {codefile}");}
-        else { Object[] tokens = lex.readThrough(args[0]); // tokenize input file. 
-               for (Object t : tokens){
-                System.out.println(t);
+        else { ArrayList<Statement> statements = lex.readThrough(args[0]); // tokenize input file. 
+               for (Statement s : statements){
+                
+                    System.out.println("#");
+                    while( s.size() > 0) { System.out.println(s.pop(0)); }
+            
                }
          }
             
