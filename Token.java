@@ -18,5 +18,7 @@ class Token{
 
     public int getType(){ return this.type; }
 
+    public int getGroup(){return this.group; }
+
     public String toString(){ return "Type: " + this.type + " \t Repr: " + this.repr + " \t Line no. : " + Integer.toString(this.ln); }
 }

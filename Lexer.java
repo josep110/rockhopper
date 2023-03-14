@@ -8,7 +8,7 @@ class Lexer{
     String[][] code;
     ArrayList<Pattern> patterns;
     ArrayList<Token> tokens;
-    ArrayList<Statement> statements;
+    ArrayList<Expression> Expressions;
     int stringI; 
 
     Pattern current;
@@ -35,7 +35,7 @@ class Lexer{
     Lexer() throws IOException{
         code = new String[0][0];
         tokens = new ArrayList<Token>();      // These are set when high level code file passed.
-        statements = new ArrayList<Statement>();
+        Expressions = new ArrayList<Expression>();
         patterns = loadPatterns(fileTo2DArr("patterns.txt"));
 
     }
@@ -153,7 +153,7 @@ class Lexer{
 
     private boolean isTerm(){ return true; }
 
-    public ArrayList<Statement> readThrough(String file) throws IOException{  // method for 'lexing' input file.
+    public ArrayList<Expression> readThrough(String file) throws IOException{  // method for 'lexing' input file.
 
             String candidate;
 
@@ -175,7 +175,7 @@ class Lexer{
 
             boolean valid;
 
-            Statement current;
+            Expression current;
             
             // for each line in code, for each word in line, compare to patterns.
 
@@ -183,7 +183,7 @@ class Lexer{
 
             for (int no = 0; no < code.length; no++){
 
-                current = new Statement(no+1);
+                current = new Expression(no+1);
 
                 for (String w : code[no]){
 
@@ -212,9 +212,9 @@ class Lexer{
 
                     } 
 
-                    statements.add(current);
+                    Expressions.add(current);
                     
-            } return statements;
+            } return Expressions;
     } 
             
 

@@ -4,12 +4,12 @@ public class Parser{
 
 
     SyntaxTree ast;
-    Iterator<Statement> iter_statements;
+    Iterator<Expression> iter_Expressions;
 
-    Parser(ArrayList<Statement> statements){
+    Parser(ArrayList<Expression> expressions){
 
         ast = new TopLevelNode(0);
-        iter_statements = new Iterator<Statement> statements.iterator();
+        iter_Expressions = new Iterator<Expression> expressions.iterator();
     
         
     }
@@ -21,7 +21,7 @@ public class Parser{
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
             SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43;
 
-    Statement current;
+    Expression current;
     String current_type;
     int currentNo;
     Token tok;
@@ -29,12 +29,12 @@ public class Parser{
     final String[] terminals = new String[]{"var","+","-","/","*","(","{",")","}",
     "==","<",">","^","%",">>","<<","&","~","#","!","if"};
 
-    SyntaxTree generateAST(ArrayList<Statement> statements){
+    SyntaxTree generateAST(ArrayList<Expression> expressions){
         
         try{
-            for (int i = 0; i < statements.size(); i++){
+            for (int i = 0; i < expressions.size(); i++){
 
-                current = statements.get(i);
+                current = expressions.get(i);
                 while(current.size() > 0){
                     tok = current.pop(0);
                      
@@ -61,32 +61,108 @@ public class Parser{
 
 // recursive descent.
 
-    private SyntaxTree TOP(Iterator<Statement> statements, SyntaxTree ast) throws ParsingError{
+    private SyntaxTree TOP(Iterator<Expression> Expressions, SyntaxTree ast) throws ParsingError{ // handles program overall.
         boolean parsingFunct = false;
-        ArrayList<Statement> functionStats = new ArrayList<Statement>();
+        ArrayList<Token> functionTokens = new ArrayList<Token>();
+
+        ArrayList<Expression> function_exprs = new ArrayList<Expression>();
+
         SyntaxTree newAST = new TopLevelNode();
-        Statement current;
+        Expression current;
 
-        while (statements.hasNext()){
-            current = statements.next();
-            if (current.pop(i).getType()==FUNCT_ID){
-                if (current.pop)
-                functionStats.add(current);
-
+        while (expressions.hasNext()){
+            current = expressions.next();
+            
+            if (parsingFunct){                     // if currently reading within function...
+                
+                    if (current.pop(0).getType()==FUNCT){                      // if another function token is found -> new function entered.
+                        newAST.add(FUNC(function_exprs));           // pass to function handler.
+                        function_exprs = new ArrayList<Expressions>();    // clear functionTokens.
+                    }
+                    else {
+                        function_exprs.add(current);   
+                    }
+                
             } else {
-                if (current.pop(i).getType()==FUNCT_ID){
+                if (current.pop(0).getType==FUNCT){   // checks if first token in current Expression is function declaration.
                     parsingFunct = true;
-
                 } else {
-                    throw new ParsingError(current.getNo(),"Statement outside of function.")
-                }
+                    throw new ParsingError(current.getNo(),"Functions allowed only.");
+                }                                                
             }
+            TopLevelNode.add(functionStats);
         }
+        return newAST;
     }
 
-    private Node FUNC(ArrayList<Statement> statements){
-        return FuncNode()
+
+    private Node FUNC(ArrayList<Token> expressions) throws ParserError{ // handles functions.
+        boolean parsing_args = false;
+        boolean parsing_body = false;
+
+        // analyse first function expression.
+
+        String name;
+
+        ArrayList<ExprNode> function_args = new ArrayList<ExprNode>();
+        ArrayList<ExprNode> function_body = new ArrayList<ExprNode>();
+
+        try {
+
+            Expression initial = expressions.get(0);
+
+            Token firstTok = initial.get(0);
+
+            if (firstTok!=IDENTIFIER){
+                throw new ParserError(current.getNo(),"Identifier not given.");
+            } else {
+                name = firstTok;
+            }
+
+            Token secondTok = initial.get(1);
+
+            if (secondTok != LEFTPAR){            // check for opening arg parenthesis
+                throw new ParserError(current.getNo(), "Opening bracket not given.");
+            } else {
+                parsing_args = true;
+            }
+
+            int i = 0;
+
+            while (parsing_args){
+                current = tokens.get(i);
+                if (current==RIGHTPAR){ parsing_args = false; }
+                else { 
+                    if (current.getGroup()==TYPE_ID){
+                        function_args.add(current);
+                        i++;
+                    } else {
+                        throw new ParsingError(current.getNo(),"Identifier given without type.");
+                    }
+                    current = tokens.get(i);
+                    if (current==IDENTIFIER){
+                        function_args.add(current);
+                        i++;
+                    } else {
+                        throw new ParsingError(current.getNo(),"No identifier given.");
+                    }
+
+                 }
+            }
+            
+
+            return FuncNode(initial.getNo(), name, returnType, args, body);
+
+        } catch(Exception e){
+            throw new ParsingError("Error found while parsing.")
+        }    
     }
+
+
+    private Node EXPR(Expression expr){
+
+    }
+
 
     private Node S(SyntaxTree st){
 
