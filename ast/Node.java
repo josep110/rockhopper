@@ -12,8 +12,4 @@ public abstract class Node implements SyntaxTree{ // this will be extended by No
         this.no = no;
     }
 
-    public <R,D> accept(Visitor<R,D> vis, D data){
-        return vis.visit(this, data);
-    }
-
 }

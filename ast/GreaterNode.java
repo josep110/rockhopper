@@ -1,4 +1,4 @@
-public class GreaterNode extends OperatorNode{
+public class GreaterNode extends BinOperatorNode{
 
 
     public GreaterNode(int no, ExprNode first, ExprNode second){

@@ -1,6 +1,6 @@
 package ast;
 
-public abstract class OperatorNode extends ExprNode{ // +, -, /, * etc.
+public abstract class BinOperatorNode extends ExprNode{ // +, -, /, * etc.
 
     private ExprNode first;
     private ExprNode second;

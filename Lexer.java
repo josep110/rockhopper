@@ -20,7 +20,7 @@ class Lexer{
     // Token groups
 
     public static final int
-            DATA=1, KEYWORDS=2, PUNCT=3, IDENT=4, OPERAT=5, ID=6;
+            DATA=1, KEYWORDS=2, PUNCT=3, IDENT=4, BINOPER=5, UNOPER=6 ID=7;
 
 
     // Keyword type IDs
@@ -51,7 +51,7 @@ class Lexer{
             while (line!=null){ 
                 String[] splitup = line.split(" ");
                 for (String word : splitup) { out.add(word); }
-                line = br.readLine(); 
+
             } 
                 
             return out;
@@ -105,20 +105,20 @@ class Lexer{
             case "else": return new Token(ELSE, KEYWORDS, repr,ln);
 
             case "+": return new Token(PLUS, OPERAT, repr,ln);
-            case "-": return new Token(MINUS, OPERAT, repr,ln);
-            case "/": return new Token(DIVIDE, OPERAT, repr,ln);
-            case "*": return new Token(MULTIPLY, OPERAT, repr,ln);
-            case "=": return new Token(EQUALS, OPERAT, repr,ln);
-            case ">": return new Token(GREATER, OPERAT, repr,ln);
-            case "<": return new Token(SMALLER, OPERAT, repr,ln);
-            case "^": return new Token(POWER, OPERAT, repr,ln);
-            case "%": return new Token(MODULO, OPERAT, repr,ln);
-            case ">>": return new Token(BITRIGHT, OPERAT, repr,ln);
-            case "<<": return new Token(BITLEFT, OPERAT , repr,ln);
-            case "&": return new Token(AND, OPERAT , repr,ln);
-            case "~": return new Token(OR, OPERAT , repr,ln);
-            case "#": return new Token(XOR, OPERAT , repr,ln);
-            case "!": return new Token(NOT, OPERAT , repr,ln);
+            case "-": return new Token(MINUS, BINOPER, repr,ln);
+            case "/": return new Token(DIVIDE, BINOPER, repr,ln);
+            case "*": return new Token(MULTIPLY, BINOPER, repr,ln);
+            case "=": return new Token(EQUALS, BINOPER, repr,ln);
+            case ">": return new Token(GREATER, BINOPER, repr,ln);
+            case "<": return new Token(SMALLER, BINOPER, repr,ln);
+            case "^": return new Token(POWER, BINOPER, repr,ln);
+            case "%": return new Token(MODULO, BINOPER, repr,ln);
+            case ">>": return new Token(BITRIGHT, BINOPER, repr,ln);
+            case "<<": return new Token(BITLEFT, BINOPER , repr,ln);
+            case "&": return new Token(AND, BINOPER , repr,ln);
+            case "~": return new Token(OR, BINOPER , repr,ln);
+            case "#": return new Token(XOR, BINOPER , repr,ln);
+            case "!": return new Token(NOT, UNOPER , repr,ln);
 
             case "int": return new Token(INT_ID, ID, repr, ln);
             case "float": return new Token(FLOAT_ID, ID, repr, ln);

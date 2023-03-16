@@ -1,4 +1,5 @@
 import ast.*;
+import java.util.*;
 
 public class Parser{
 
@@ -7,15 +8,12 @@ public class Parser{
     Iterator<Expression> iter_Expressions;
 
     Parser(ArrayList<Expression> expressions){
-
         ast = new TopLevelNode(0);
-        iter_Expressions = new Iterator<Expression> expressions.iterator();
-    
-        
+        iter_Expressions = expressions.iterator();
     }
 
     public static final int 
-            INT=1, STRING=2, FLOAT=3, BOOLEAN=4, LEFTPAR=5, RIGHTPAR=6, LEFTBR=7, RIGHTBR=8,
+            NULL=0, INT=1, STRING=2, FLOAT=3, BOOLEAN=4, LEFTPAR=5, RIGHTPAR=6, LEFTBR=7, RIGHTBR=8,
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
             SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
@@ -30,34 +28,11 @@ public class Parser{
     "==","<",">","^","%",">>","<<","&","~","#","!","if"};
 
     SyntaxTree generateAST(ArrayList<Expression> expressions){
-        
-        try{
-            for (int i = 0; i < expressions.size(); i++){
+        SyntaxTree ast = TOP(expressions, new TopLevelNode(0));
 
-                current = expressions.get(i);
-                while(current.size() > 0){
-                    tok = current.pop(0);
-                     
-                }                
-                
-
-            }
-        }
-        catch(Exception e){
-            throw new SyntaxError(currentNo);
-        }
-
-    }
-
-    private void descend(){
-
-    }
-
-    private void terminalMatch(Token tok) throws SyntaxError{
-        if (current==tok){ current = current.next();}
-        else { throw new SyntaxError(); }
-    }
-
+    }   
+    
+ 
 
 // recursive descent.
 
@@ -76,8 +51,8 @@ public class Parser{
             if (parsingFunct){                     // if currently reading within function...
                 
                     if (current.pop(0).getType()==FUNCT){                      // if another function token is found -> new function entered.
-                        newAST.add(FUNC(function_exprs));           // pass to function handler.
-                        function_exprs = new ArrayList<Expressions>();    // clear functionTokens.
+                        newAST.add(FUNC(function_exprs));                      // pass to function handler.
+                        function_exprs = new ArrayList<Expressions>();         // clear functionTokens.
                     }
                     else {
                         function_exprs.add(current);   
@@ -96,7 +71,8 @@ public class Parser{
     }
 
 
-    private Node FUNC(ArrayList<Token> expressions) throws ParserError{ // handles functions.
+
+    private Node FUNC(ArrayList<Token> expressions) throws ParsingError{ // handles functions.
         boolean parsing_args = false;
         boolean parsing_body = false;
 
@@ -121,7 +97,7 @@ public class Parser{
 
             Token secondTok = initial.get(1);
 
-            if (secondTok != LEFTPAR){            // check for opening arg parenthesis
+            if (secondTok != LEFTPAR){                         // check for opening arg parenthesis
                 throw new ParserError(current.getNo(), "Opening bracket not given.");
             } else {
                 parsing_args = true;
@@ -133,14 +109,14 @@ public class Parser{
                 current = tokens.get(i);
                 if (current==RIGHTPAR){ parsing_args = false; }
                 else { 
-                    if (current.getGroup()==TYPE_ID){
+                    if (current.getGroup()==TYPE_ID){             // check for type ID.
                         function_args.add(current);
                         i++;
                     } else {
                         throw new ParsingError(current.getNo(),"Identifier given without type.");
                     }
                     current = tokens.get(i);
-                    if (current==IDENTIFIER){
+                    if (current==IDENTIFIER){               // check for identifier.
                         function_args.add(current);
                         i++;
                     } else {
@@ -149,65 +125,139 @@ public class Parser{
 
                  }
             }
-            
-
             return FuncNode(initial.getNo(), name, returnType, args, body);
 
         } catch(Exception e){
-            throw new ParsingError("Error found while parsing.")
+            throw new ParsingError(expressions.get(0).getNo(), "Error found while parsing. (FUNC)");
         }    
     }
 
 
     private Node EXPR(Expression expr){
 
+        try {
+            if (expr.length()==1){
+                return CONST(expr.pop(0));
+            } else {
+
+                int top = expr.pop(0).getType();
+
+                if (top==IF){
+                    return COND(expr.getNo(),expr);
+                }
+                if (top==SWITCH){
+                    return SWTCH(expr.getNo(),expr);
+                }
+                if (top==WHILE){
+                    return WHLE(expr.getNo(),expr);
+                }
+               
+            }
+
+        } catch(Exception e){
+            throw new ParsingError(-1, "within EXPR"); // change this later.
+        }
+
+    
+    }
+
+    private Node CONST(Token t) throws ParsingError { // int, float, string, boolean constants.
+
+        int no = t.getNo();
+
+        try {
+            
+            int type = t.getType();
+            String repr = t.getRepr();
+
+            if (type==INT){
+                return new ConstNode(no, type, Integer.parseInt(repr));
+            }
+            if (type==FLOAT){
+                return new ConstNode(no, type, Double.parseDouble(repr));
+            }
+            if (type==STRING){
+                return new ConstNode(no, type, repr);
+            }
+            if (type==BOOLEAN){
+                if (repr=="true"){ return new ConstNode(no, type, true); }
+                else { return new ConstNode(no, type, false); }
+            }
+            return new ConstNode(no, 0, null);
+
+        } catch(Exception e) {
+            throw new ParsingError(no, "Error at CONST()");
+        }
     }
 
 
-    private Node S(SyntaxTree st){
+    private Node COND(int no, ArrayList<Expression> exprs){
 
+    
     }
 
-    private Node X(SyntaxTree st){
-        
+    private Node SWTCH(int no, Expression cond, ArrayList<Expression> branches){
 
+        CaseNode out = new CaseNode(no, )
     }
 
-    private Node K(SyntaxTree st){}
 
-    private Node OP(SyntaxTree st){}
+    private Node BINOP(int type, int no, Expression expr1_raw, Expression expr2_raw){ // handle binary operators.
 
-    private Node BOOL(SyntaxTree st){}
+        if(expr1_raw.getType()!=expr2_raw.getType()){
+            throw new ParsingError(no, "Binop Operand mismatch.");
+        } else {
 
-    private Node IF(SyntaxTree st){}
+            ExprNode expr1 = EXPR(expr1_raw);
+            ExprNode expr2 = EXPR(expr2_raw);        
 
-    private Node ELIF(SyntaxTree st){}
+            if(type==PLUS){
+                return new AdditNode(no, expr1, expr2);
+            }
+            if(type==MINUS){
+                return SubtrNode(no, expr1, expr2);
+            }
+            if(type==GREATER){
+                return GreaterNode(no, expr1, expr2);
+            }
+            if(type==SMALLER){
+                return SmallerNode(no, expr1, expr2);
+            }
+            if(type==EQUALS){
+                return EqualsNode(no, expr1, expr2);
+            }
+            if(type==MULTIPLY){
+                return MultiplyNode(no, expr1, expr2);
+            }
+            if(type==DIVIDE){
+                return DivideNode(no, expr1, expr2)
+            }
+            if(type==POWER){
+                return PowerNode(no, expr1, expr2)
+            }
+            if(type==MODULO){
+                return ModuloNode(no, expr1, expr2#)
+            }
+            if(type==BITRIGHT){
+                return BitRightNode(no, expr1, expr2#);
+            }
+            if(type==BITLEFT){
+                return BitLeftNode(no, expr1, expr2#);
+            }
+            if(type==AND){
+                return AndNode(no, expr1, expr2#);
+            }
+            if(type==OR){
+                return OrNode(no, expr1, expr2#);
+            }
+            if(type==XOR){
+                return XorNode(no, expr1, expr2#);
+            }
+        }
+    }
 
-    private Node ELSE(SyntaxTree st){}
-
-    private Node SWTCH(SyntaxTree st){}
-
-    private Node CASE(SyntaxTree st){}
-
-    private Node CALL(SyntaxTree st){}
-
-    private Node NEWK(SyntaxTree st){}
-
-    private Node F(SyntaxTree st){}
-
-    
-    
-    private Node SET(SyntaxTree st){}
-
-    private Node ARR(SyntaxTree st){}
-
-    private Node MAP(SyntaxTree st){}
-
-    private Node 
-    
-
-    
-
-
+    private Node UNOP(int no, Expression expr){
+        return NotNode(no, expr);
+    }
 
 }

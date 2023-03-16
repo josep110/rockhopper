@@ -10,7 +10,7 @@ class Expression{
 
     Expression(ArrayList<Token> contained){ this.contained = contained; length = contained.size(); }
 
-    public int size(){return length; }
+    public int size(){ return length; }
 
     public void addTo(Token t){ contained.add(t); length++; }
 
@@ -22,6 +22,13 @@ class Expression{
             return out; 
         }
         return null;
+    }
+
+    public boolean checkPresence(int type){
+        for (Token t : contained){
+            if (t.getType()==type){ return true; }
+        }
+        return false;
     }
 
     public int getNo(){

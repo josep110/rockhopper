@@ -3,11 +3,11 @@ import java.util.regex.Pattern;
 
 class Token{
     
-    int type;
-    int group;
-    String repr;
-    boolean term;
-    int ln;
+    private int type;
+    private int group;
+    private String repr;
+    private boolean term;
+    private int ln;
     
     Token(int type, int group, String repr, int ln){
         this.type = type;
@@ -19,6 +19,8 @@ class Token{
     public int getType(){ return this.type; }
 
     public int getGroup(){return this.group; }
+
+    public String getRepr(){ return this.repr; }
 
     public String toString(){ return "Type: " + this.type + " \t Repr: " + this.repr + " \t Line no. : " + Integer.toString(this.ln); }
 }
