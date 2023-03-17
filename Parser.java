@@ -70,6 +70,9 @@ public class Parser{
         return newAST;
     }
 
+    private ArrayList<Expression> DELIM(ArrayList<Token>){ // handles delimited expressions (function arguments etc.)
+
+    }
 
 
     private Node FUNC(ArrayList<Token> expressions) throws ParsingError{ // handles functions.
@@ -125,7 +128,7 @@ public class Parser{
 
                  }
             }
-            return FuncNode(initial.getNo(), name, returnType, args, body);
+            return FuncNode(initial.getNo(), name, returnType, function_args, function_body);
 
         } catch(Exception e){
             throw new ParsingError(expressions.get(0).getNo(), "Error found while parsing. (FUNC)");
@@ -198,7 +201,11 @@ public class Parser{
 
     private Node SWTCH(int no, Expression cond, ArrayList<Expression> branches){
 
-        CaseNode out = new CaseNode(no, )
+        SwitchNode out = new SwitchNode(no, cond);
+        for (Expression branch : branches){
+            out.add(branch);
+        }
+        return out;
     }
 
 
@@ -236,22 +243,22 @@ public class Parser{
                 return PowerNode(no, expr1, expr2)
             }
             if(type==MODULO){
-                return ModuloNode(no, expr1, expr2#)
+                return ModuloNode(no, expr1, expr2)
             }
             if(type==BITRIGHT){
-                return BitRightNode(no, expr1, expr2#);
-            }
+                return BitRightNode(no, expr1, expr2);
+            
             if(type==BITLEFT){
-                return BitLeftNode(no, expr1, expr2#);
+                return BitLeftNode(no, expr1, expr2);
             }
             if(type==AND){
-                return AndNode(no, expr1, expr2#);
+                return AndNode(no, expr1, expr2);
             }
             if(type==OR){
-                return OrNode(no, expr1, expr2#);
+                return OrNode(no, expr1, expr2);
             }
             if(type==XOR){
-                return XorNode(no, expr1, expr2#);
+                return XorNode(no, expr1, expr2);
             }
         }
     }
