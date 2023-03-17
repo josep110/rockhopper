@@ -38,4 +38,16 @@ class Expression{
     public ArrayList<Token> getTokens(){
         return this.contained;
     }
+
+    public Token peek(int i){
+        return this.contained.get(i);
+    }
+
+    public Token popFirst(){
+        return pop(0);
+    }
+
+    public Token popLast(){
+        return pop(this.length-1);
+    }
 } 

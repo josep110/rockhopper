@@ -12,6 +12,10 @@ public class Parser{
         iter_Expressions = expressions.iterator();
     }
 
+    public static final int
+            DATA=1, KEYWORDS=2, PUNCT=3, IDENT=4, BINOPER=5, UNOPER=6 ID=7;
+
+
     public static final int 
             NULL=0, INT=1, STRING=2, FLOAT=3, BOOLEAN=4, LEFTPAR=5, RIGHTPAR=6, LEFTBR=7, RIGHTBR=8,
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
@@ -70,8 +74,49 @@ public class Parser{
         return newAST;
     }
 
-    private ArrayList<Expression> DELIM(ArrayList<Token>){ // handles delimited expressions (function arguments etc.)
 
+    private ArrayList<ExprNode> DELIM(Expression expr){ // handles delimited expressions (function arguments etc.)
+ 
+
+        int ln = expr.getNo();
+        ArrayList<ExprNode> out = new ArrayList<ExprNode>();
+
+
+        Token first = expr.popFirst();
+        if (expr.popFirst().getGroup()!=TYPE_ID){
+            throw new ParserError(expr.getNo(),"Missing type declaration!");
+        } else {
+
+            boolean expect_type = true;           // prevents type declarations being given without variable declaration.
+            int current_type = first.getType();
+            Token next;
+            Expression var_decl;
+
+            for (int i = 0; i < expr.size();i++){
+
+                next = expr.peek(i);
+
+                if (next.getGroup()==TYPE_ID){
+                    if (!expect_type){
+                      out.add(EXPR(var_decl));      // send variables(s) to be initialised to EXPR method.
+                    }
+                    var_decl = new Expression(ln);
+                    var_decl.add(next);
+                    current_type=next.getType();
+                    expect_type = true;
+                }
+                else{
+                    if(next.getGroup==IDENT && !expect_type){
+                        var_decl.add(next);
+                    } else {
+                        throw new ParsingError(ln, "Identifier given without type.");
+                    }                                // allows for multiple variables to be declared with single type declaration.
+
+                }
+            }
+
+            return out;
+        }
     }
 
 
