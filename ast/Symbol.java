@@ -3,15 +3,12 @@ package ast;
 public class Symbol extends Node { // Identifiers etc.
 
     private String name;
-    private int index;
-
-    public int getIndex(){ return index; }
 
     public String getName(){ return name; }
 
-    public Symbol(String name, int index){
+    public Symbol(String name, int no){
+        super(no);
         this.name = name;
-        this.index = index;
     }
 
     public String toString(){ return name; }

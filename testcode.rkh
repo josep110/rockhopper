@@ -1,1 +1,5 @@
-function test(int i, int j){ return i+j }
+function test(int i, int j) :
+    return i+j 
+
+function test2(String s):
+    return s

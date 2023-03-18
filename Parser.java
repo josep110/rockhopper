@@ -21,7 +21,7 @@ public class Parser{
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
             SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
-            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43;
+            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43; COLON=44;
 
     Expression current;
     String current_type;
@@ -120,61 +120,36 @@ public class Parser{
     }
 
 
-    private Node FUNC(ArrayList<Token> expressions) throws ParsingError{ // handles functions.
+    private Node FUNC(ArrayList<Expression> expressions) throws ParsingError{ // handles functions.
         boolean parsing_args = false;
         boolean parsing_body = false;
 
         // analyse first function expression.
 
-        String name;
+        Symbol name;
+        Symbol return_type;
 
-        ArrayList<ExprNode> function_args = new ArrayList<ExprNode>();
+        ArrayList<ExprNode> function_args;
         ArrayList<ExprNode> function_body = new ArrayList<ExprNode>();
 
         try {
 
-            Expression initial = expressions.get(0);
+            Expression first = expressions.get(0);
+            int ln = first.getNo();
 
-            Token firstTok = initial.get(0);
+            return_type = new Symbol(first.popFirst());   // grab function return type, name.
+            name = new Symbol(first.popFirst());
 
-            if (firstTok!=IDENTIFIER){
-                throw new ParserError(current.getNo(),"Identifier not given.");
+            if (first.popLast()!=COLON){
+                throw new ParsingError(ln, "Function missing colon.");
             } else {
-                name = firstTok;
+                function_args = DELIM(first);        // load function arguments from first expression.s
+                for (Expression e : expressions){
+                    function_body.add(EXPR(e));      // load function body from expressions.
+                }
+                return FuncNode(ln, name, returnType, function_args, function_body);
             }
-
-            Token secondTok = initial.get(1);
-
-            if (secondTok != LEFTPAR){                         // check for opening arg parenthesis
-                throw new ParserError(current.getNo(), "Opening bracket not given.");
-            } else {
-                parsing_args = true;
-            }
-
-            int i = 0;
-
-            while (parsing_args){
-                current = tokens.get(i);
-                if (current==RIGHTPAR){ parsing_args = false; }
-                else { 
-                    if (current.getGroup()==TYPE_ID){             // check for type ID.
-                        function_args.add(current);
-                        i++;
-                    } else {
-                        throw new ParsingError(current.getNo(),"Identifier given without type.");
-                    }
-                    current = tokens.get(i);
-                    if (current==IDENTIFIER){               // check for identifier.
-                        function_args.add(current);
-                        i++;
-                    } else {
-                        throw new ParsingError(current.getNo(),"No identifier given.");
-                    }
-
-                 }
-            }
-            return FuncNode(initial.getNo(), name, returnType, function_args, function_body);
-
+            
         } catch(Exception e){
             throw new ParsingError(expressions.get(0).getNo(), "Error found while parsing. (FUNC)");
         }    

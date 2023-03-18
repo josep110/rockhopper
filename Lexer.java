@@ -30,7 +30,7 @@ class Lexer{
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
             SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
-            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT=43;
+            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT=43; COLON=44;
  
     Lexer() throws IOException{
         code = new String[0][0];
@@ -104,6 +104,7 @@ class Lexer{
             case "elif": return new Token(ELIF, KEYWORDS, repr,ln);
             case "else": return new Token(ELSE, KEYWORDS, repr,ln);
 
+            case ":": return new Token(COLON, DATA, repr, ln);
             case "+": return new Token(PLUS, OPERAT, repr,ln);
             case "-": return new Token(MINUS, BINOPER, repr,ln);
             case "/": return new Token(DIVIDE, BINOPER, repr,ln);
@@ -140,6 +141,7 @@ class Lexer{
 
         switch(re){ // pattern matching
 
+            
             case "\'[a-zA-Z0-9]+\'": return new Token(STRING, DATA, repr,ln);
             case "\"[a-zA-Z0-9]+\"": return new Token(STRING, DATA, repr,ln);
             case "[0-9]+": return new Token(INT,DATA,repr,ln);

@@ -4,7 +4,7 @@ public abstract class Node implements SyntaxTree{ // this will be extended by No
     
     private int no;
     
-    public int getLineNO(){
+    public int getNo(){
         return no;
     }
 
