@@ -4,7 +4,7 @@ import java.util.*;
 public class Parser{
 
 
-    SyntaxTree ast;
+    Node ast;
     Iterator<Expression> iter_Expressions;
 
     Parser(ArrayList<Expression> expressions){
@@ -13,7 +13,7 @@ public class Parser{
     }
 
     public static final int
-            DATA=1, KEYWORDS=2, PUNCT=3, IDENT=4, BINOPER=5, UNOPER=6 ID=7;
+            DATA=1, KEYWORDS=2, PUNCT=3, IDENT=4, BINOPER=5, UNOPER=6, ID=7;
 
 
     public static final int 
@@ -21,7 +21,7 @@ public class Parser{
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
             SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
-            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43; COLON=44;
+            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43, COLON=44, FUNCT=45;
 
     Expression current;
     String current_type;
@@ -31,8 +31,8 @@ public class Parser{
     final String[] terminals = new String[]{"var","+","-","/","*","(","{",")","}",
     "==","<",">","^","%",">>","<<","&","~","#","!","if"};
 
-    SyntaxTree generateAST(ArrayList<Expression> expressions){
-        SyntaxTree ast = TOP(expressions, new TopLevelNode(0));
+    Node generateAST(ArrayList<Expression> expressions){
+        Node ast = TOP(expressions, new TopLevelNode(0));
 
     }   
     
@@ -40,14 +40,16 @@ public class Parser{
 
 // recursive descent.
 
-    private SyntaxTree TOP(Iterator<Expression> Expressions, SyntaxTree ast) throws ParsingError{ // handles program overall.
+    private Node TOP(ArrayList<Expression> exprs, Node ast) throws ParsingError{ // handles program overall.
         boolean parsingFunct = false;
         ArrayList<Token> functionTokens = new ArrayList<Token>();
 
         ArrayList<Expression> function_exprs = new ArrayList<Expression>();
 
-        SyntaxTree newAST = new TopLevelNode();
+        TopLevelNode newAST = new TopLevelNode(0);
         Expression current;
+
+        Iterator<Expression> expressions = exprs.iterator();
 
         while (expressions.hasNext()){
             current = expressions.next();
@@ -56,20 +58,19 @@ public class Parser{
                 
                     if (current.pop(0).getType()==FUNCT){                      // if another function token is found -> new function entered.
                         newAST.add(FUNC(function_exprs));                      // pass to function handler.
-                        function_exprs = new ArrayList<Expressions>();         // clear functionTokens.
+                        function_exprs = new ArrayList<Expression>();         // clear functionTokens.
                     }
                     else {
                         function_exprs.add(current);   
                     }
                 
             } else {
-                if (current.pop(0).getType==FUNCT){   // checks if first token in current Expression is function declaration.
+                if (current.pop(0).getType()==FUNCT){   // checks if first token in current Expression is function declaration.
                     parsingFunct = true;
                 } else {
                     throw new ParsingError(current.getNo(),"Functions allowed only.");
                 }                                                
             }
-            TopLevelNode.add(functionStats);
         }
         return newAST;
     }
@@ -84,7 +85,7 @@ public class Parser{
 
         Token first = expr.popFirst();
         if (expr.popFirst().getGroup()!=TYPE_ID){
-            throw new ParserError(expr.getNo(),"Missing type declaration!");
+            throw new ParsingError(expr.getNo(),"Missing type declaration!");
         } else {
 
             boolean expect_type = true;           // prevents type declarations being given without variable declaration.
@@ -106,7 +107,7 @@ public class Parser{
                     expect_type = true;
                 }
                 else{
-                    if(next.getGroup==IDENT && !expect_type){
+                    if(next.getGroup()==IDENT && !expect_type){
                         var_decl.add(next);
                     } else {
                         throw new ParsingError(ln, "Identifier given without type.");
@@ -120,7 +121,7 @@ public class Parser{
     }
 
 
-    private Node FUNC(ArrayList<Expression> expressions) throws ParsingError{ // handles functions.
+    private FuncNode FUNC(ArrayList<Expression> expressions) throws ParsingError{ // handles functions.
         boolean parsing_args = false;
         boolean parsing_body = false;
 
@@ -137,17 +138,17 @@ public class Parser{
             Expression first = expressions.get(0);
             int ln = first.getNo();
 
-            return_type = new Symbol(first.popFirst());   // grab function return type, name.
-            name = new Symbol(first.popFirst());
+            return_type = new Symbol(first.popFirst().getRepr(),ln);   // grab function return type, name.
+            name = new Symbol(first.popFirst().getRepr(),ln);
 
-            if (first.popLast()!=COLON){
+            if (first.popLast().getType()!=COLON){
                 throw new ParsingError(ln, "Function missing colon.");
             } else {
                 function_args = DELIM(first);        // load function arguments from first expression.s
                 for (Expression e : expressions){
                     function_body.add(EXPR(e));      // load function body from expressions.
                 }
-                return FuncNode(ln, name, returnType, function_args, function_body);
+                return FuncNode(ln, name, return_type, function_args, function_body);
             }
             
         } catch(Exception e){
@@ -156,18 +157,18 @@ public class Parser{
     }
 
 
-    private Node EXPR(Expression expr){
+    private ExprNode EXPR(Expression expr){
 
         try {
-            if (expr.length()==1){
+            if (expr.size()==1){
                 return CONST(expr.pop(0));
             } else {
 
                 int top = expr.pop(0).getType();
 
-                if (top==IF){
-                    return COND(expr.getNo(),expr);
-                }
+                // if (top==IF){
+                //     return COND(expr.getNo(),expr);
+                // }
                 if (top==SWITCH){
                     return SWTCH(expr.getNo(),expr);
                 }
@@ -214,77 +215,93 @@ public class Parser{
     }
 
 
-    private Node COND(int no, ArrayList<Expression> exprs){
+    // private Node COND(int no, Expression expr){
+        
+        
+    //     return new IfNode()
 
     
-    }
+    // }
 
     private Node SWTCH(int no, Expression cond, ArrayList<Expression> branches){
 
-        SwitchNode out = new SwitchNode(no, cond);
-        for (Expression branch : branches){
-            out.add(branch);
+        ExprNode cn = EXPR(cond);
+
+        SwitchNode out = new SwitchNode(no, cn);
+        for (Expression branch_Ex : branches){
+
+            if(branch_Ex.popFirst().getType()==CASE){
+                ArrayList<Expression> split_exp = branch_Ex.split(COLON);
+               
+                ExprNode br_cond = EXPR(split_exp.get(0));
+                ExprNode br_body = EXPR(split_exp.get(1));
+
+                out.addBranch(new CaseNode(no, br_cond, br_body));
+            } else {
+                throw new ParsingError(no, "Missing keyword {case}");
+            }
+            
         }
         return out;
     }
 
 
-    private Node BINOP(int type, int no, Expression expr1_raw, Expression expr2_raw){ // handle binary operators.
+    private Node BINOP(int type, int no, Expression expr_raw){ // handle binary operators.
 
-        if(expr1_raw.getType()!=expr2_raw.getType()){
+        ExprNode expr1 = EXPR(expr_raw.subExpr(0,1));
+        ExprNode expr2 = EXPR(expr_raw.subExpr(2,3));
+
+        if(expr1.getType()!=expr2.getType()){
             throw new ParsingError(no, "Binop Operand mismatch.");
         } else {
-
-            ExprNode expr1 = EXPR(expr1_raw);
-            ExprNode expr2 = EXPR(expr2_raw);        
 
             if(type==PLUS){
                 return new AdditNode(no, expr1, expr2);
             }
             if(type==MINUS){
-                return SubtrNode(no, expr1, expr2);
+                return new SubtrNode(no, expr1, expr2);
             }
             if(type==GREATER){
-                return GreaterNode(no, expr1, expr2);
+                return new GreaterNode(no, expr1, expr2);
             }
             if(type==SMALLER){
-                return SmallerNode(no, expr1, expr2);
+                return new SmallerNode(no, expr1, expr2);
             }
             if(type==EQUALS){
-                return EqualsNode(no, expr1, expr2);
+                return new EqualsNode(no, expr1, expr2);
             }
             if(type==MULTIPLY){
-                return MultiplyNode(no, expr1, expr2);
+                return new MultiplyNode(no, expr1, expr2);
             }
             if(type==DIVIDE){
-                return DivideNode(no, expr1, expr2)
+                return new DivideNode(no, expr1, expr2);
             }
             if(type==POWER){
-                return PowerNode(no, expr1, expr2)
+                return new PowerNode(no, expr1, expr2);
             }
             if(type==MODULO){
-                return ModuloNode(no, expr1, expr2)
+                return new ModuloNode(no, expr1, expr2);
             }
             if(type==BITRIGHT){
-                return BitRightNode(no, expr1, expr2);
-            
+                return new BitRightNode(no, expr1, expr2);
+            }
             if(type==BITLEFT){
-                return BitLeftNode(no, expr1, expr2);
+                return new BitLeftNode(no, expr1, expr2);
             }
             if(type==AND){
-                return AndNode(no, expr1, expr2);
+                return new AndNode(no, expr1, expr2);
             }
             if(type==OR){
-                return OrNode(no, expr1, expr2);
+                return new OrNode(no, expr1, expr2);
             }
             if(type==XOR){
-                return XorNode(no, expr1, expr2);
+                return new XorNode(no, expr1, expr2);
             }
         }
     }
 
     private Node UNOP(int no, Expression expr){
-        return NotNode(no, expr);
+        return new NotNode(no, EXPR(expr));
     }
 
 }

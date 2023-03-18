@@ -7,14 +7,14 @@ public class IfNode extends ExprNode{ // if x
     private ArrayList<ExprNode> ifBranch;
     private ArrayList<ExprNode> elifBranch;
     private ArrayList<ExprNode> elseBranch;
-    
 
     public IfNode(int no, ExprNode condition, ArrayList<ExprNode> ifBranch, ArrayList<ExprNode> elseBranch){
         super(no);
         this.condition = condition;
         this.ifBranch = ifBranch;
-        
     }
+
+
 
     public void addElif(ArrayList<ExprNode> expr){ this.elifBranch = expr; }
 

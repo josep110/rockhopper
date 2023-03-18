@@ -6,7 +6,6 @@ public class SwitchNode extends ExprNode{
     protected ExprNode expr;
     public ArrayList<CaseNode> cases;
 
-
     public SwitchNode(int no, ExprNode expr, ArrayList<CaseNode> cases){
         super(no);
         this.expr = expr;

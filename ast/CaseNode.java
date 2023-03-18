@@ -6,7 +6,7 @@ public class CaseNode{ // case x:
     private ExprNode cond;
     private ExprNode expr;
 
-    public CaseNode(int no, ExprNode expr){
+    public CaseNode(int no, ExprNode cond, ExprNode expr){
         this.name = name;
         this.cond = cond;
         this.expr = expr;
