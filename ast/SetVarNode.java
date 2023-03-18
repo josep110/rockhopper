@@ -1,3 +1,5 @@
+package ast;
+
 public class SetVarNode extends ExprNode{
     private Symbol name;
     private ExprNode expr;

@@ -1,3 +1,5 @@
+package ast;
+
 public class XorNode extends BinOperatorNode{
 
     public XorNode(int no, ExprNode first, ExprNode second){

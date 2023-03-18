@@ -1,12 +1,15 @@
+package ast;
+import java.util.ArrayList;
+
 public class TopLevelNode extends Node{ // Tops a tree.
 
-    List<FuncNode> functions = new LinkedList<FuncNode>();
+    ArrayList<FuncNode> functions = new ArrayList<FuncNode>();
 
     public TopLevelNode(int no){
         super(no);
     }
 
-    public List<FuncNode> getFunctions(){
+    public ArrayList<FuncNode> getFunctions(){
         return functions;
     }
 

@@ -1,3 +1,5 @@
+package ast;
+
 public class PowerNode extends BinOperatorNode{
 
     public PowerNode(int no, ExprNode first, ExprNode second){

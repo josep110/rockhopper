@@ -1,3 +1,5 @@
+package ast;
+
 public class GreaterNode extends BinOperatorNode{
 
 

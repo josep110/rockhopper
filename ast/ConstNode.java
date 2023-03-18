@@ -1,3 +1,5 @@
+package ast;
+
 class ConstNode<T> extends ExprNode{
 
     private int type;

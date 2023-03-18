@@ -1,17 +1,23 @@
+package ast;
+import java.util.ArrayList;
+
+
 public class FuncNode extends Node {  // func(x){}
 
     private Symbol name;
     private Symbol returnType;
-    private ExprNode[] args;
-    private ExprNode[] body;
+    private ArrayList<ExprNode> args;
+    private ArrayList<ExprNode> body;
 
     public Symbol getName(){ return name; }
 
     public Symbol getReturn(){ return returnType; }
 
-    public Symbol getArgs(){ return argExpression; }
+    public ArrayList<ExprNode> getArgs(){ return args; }
 
-    public FuncNode(int no, Symbol name, Symbol returnType, ExprNode[] args, ExprNode[] body){
+    public ArrayList<ExprNode> getBody(){ return body; }
+
+    public FuncNode(int no, Symbol name, Symbol returnType, ArrayList<ExprNode> args, ArrayList<ExprNode> body){
         super(no);
         this.name = name;
         this.returnType = returnType;

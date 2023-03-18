@@ -1,3 +1,5 @@
+package ast;
+
 public class ModuloNode extends BinOperatorNode{
 
     public ModuloNode(int no, ExprNode first, ExprNode second){

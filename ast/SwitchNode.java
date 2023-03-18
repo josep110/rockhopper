@@ -1,9 +1,10 @@
+package ast;
 import java.util.ArrayList;
 
 public class SwitchNode extends ExprNode{
 
     protected ExprNode expr;
-    public ArratList<CaseNode> cases;
+    public ArrayList<CaseNode> cases;
 
 
     public SwitchNode(int no, ExprNode expr, ArrayList<CaseNode> cases){

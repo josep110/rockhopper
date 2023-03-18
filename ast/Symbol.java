@@ -1,5 +1,6 @@
 package ast;
 
+
 public class Symbol extends Node { // Identifiers etc.
 
     private String name;

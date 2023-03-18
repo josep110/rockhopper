@@ -1,13 +1,15 @@
 package ast;
+import java.util.ArrayList;
 
 public class ElseNode extends ExprNode{ // else 
     
     private IfNode preceeder;
-    private ExprNode expr;
+    private ArrayList<ExprNode> branch;
 
-    public ElseNode(int no, IfNode preceeder, ExprNode expr0){
+    public ElseNode(int no, IfNode preceeder, ArrayList<ExprNode> branch){
+        super(no);
         this.preceeder = preceeder;
-        this.expr = expr;
+        this.branch = branch;
     }
 
 }
