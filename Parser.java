@@ -166,9 +166,9 @@ public class Parser{
 
                 int top = expr.pop(0).getType();
 
-                // if (top==IF){
-                //     return COND(expr.getNo(),expr);
-                // }
+                if (top==IF){
+                    return COND(expr.getNo(),expr);
+                }
                 if (top==SWITCH){
                     return SWTCH(expr.getNo(),expr);
                 }
@@ -215,15 +215,26 @@ public class Parser{
     }
 
 
-    // private Node COND(int no, Expression expr){
+    private Node COND(int no, Expression expr){
         
-        
-    //     return new IfNode()
 
-    
-    // }
 
-    private Node SWTCH(int no, Expression cond, ArrayList<Expression> branches){
+        return new IfNode()    
+    }
+
+
+    private WhileNode WHILE(int no, Expression cond, ArrayList<Expression> body){
+
+        ExprNode cn = EXPR(cond);
+        ArrayList<ExprNode> body = new ArrayList<ExprNode>();
+        for (Expression expr_raw : body){
+            body.add(EXPR(expr_raw));
+        }
+        return new WhileNode(no, cond, body);
+    }
+
+
+    private SwitchNode SWTCH(int no, Expression cond, ArrayList<Expression> branches){
 
         ExprNode cn = EXPR(cond);
 
@@ -246,7 +257,7 @@ public class Parser{
     }
 
 
-    private Node BINOP(int type, int no, Expression expr_raw){ // handle binary operators.
+    private BinOperatorNode BINOP(int type, int no, Expression expr_raw){ // handle binary operators.
 
         ExprNode expr1 = EXPR(expr_raw.subExpr(0,1));
         ExprNode expr2 = EXPR(expr_raw.subExpr(2,3));
