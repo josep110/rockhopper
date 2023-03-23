@@ -40,24 +40,6 @@ class Lexer{
 
     }
 
-    public static ArrayList<String> fileToList(String filename) throws IOException { // load from external file into ArrayList.
-        
-            
-            ArrayList<String> out = new ArrayList<>();
-            BufferedReader br = new BufferedReader(new FileReader(filename));
-
-            String line = br.readLine();
-            
-            while (line!=null){ 
-                String[] splitup = line.split(" ");
-                for (String word : splitup) { out.add(word); }
-
-            } 
-                
-            return out;
-       
-    }
-
     public static String[][] fileTo2DArr(String filename) throws IOException{
 
         String[][] out = new String[0][];
@@ -152,8 +134,6 @@ class Lexer{
     }
 
 
-
-    private boolean isTerm(){ return true; }
 
     public ArrayList<Expression> readThrough(String file) throws IOException{  // method for 'lexing' input file.
 

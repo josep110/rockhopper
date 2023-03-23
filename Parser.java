@@ -85,7 +85,7 @@ public class Parser{
 
         Token first = expr.popFirst();
         if (expr.popFirst().getGroup()!=TYPE_ID){
-            throw new ParsingError(expr.getNo(),"Missing type declaration!");
+            throw new ParsingError(expr.getNo(),"Missing type declaration.");
         } else {
 
             boolean expect_type = true;           // prevents type declarations being given without variable declaration.
@@ -167,7 +167,7 @@ public class Parser{
                 int top = expr.pop(0).getType();
 
                 if (top==IF){
-                    return COND(expr.getNo(),expr);
+                    return IF(expr.getNo(),expr);
                 }
                 if (top==SWITCH){
                     return SWTCH(expr.getNo(),expr);
@@ -215,17 +215,30 @@ public class Parser{
     }
 
 
-    private Node COND(int no, Expression expr){
+    private Node IF(int no, Expression cond, ArrayList<Expression> body){
         
+        ExprNode cond_node;
+        ArrayList<ExprNode> body_nodes;
 
+        try {
 
-        return new IfNode()    
+            cond_node = EXPR(cond);
+            body_nodes = DELIM(body);
+            return new IfNode(cond, )
+        }
+
+        if (expr.popFirst().getType()==LEFTPAR && expr.popLast().getType==RIGHTPAR){
+            
+        } else {
+            throw new ParsingError(no, "Parantheses missing.")
+        }
     }
 
 
     private WhileNode WHILE(int no, Expression cond, ArrayList<Expression> body){
 
         ExprNode cn = EXPR(cond);
+        
         ArrayList<ExprNode> body = new ArrayList<ExprNode>();
         for (Expression expr_raw : body){
             body.add(EXPR(expr_raw));

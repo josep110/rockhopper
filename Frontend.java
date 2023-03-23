@@ -8,7 +8,7 @@ public class Frontend{
 
         Lexer lex = new Lexer();
         Parser pars;
-        Node ast;
+        TopLevelNode ast;
 
         Semantic sem;
         Node an_ast;

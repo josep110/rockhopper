@@ -7,13 +7,13 @@ class Token{
     private int group;
     private String repr;
     private boolean term;
-    private int ln;
+    private int no;
     
     Token(int type, int group, String repr, int ln){
         this.type = type;
         this.group = group;
         this.repr = repr;
-        this.ln = ln;
+        this.no = no;
     }
 
     public int getType(){ return this.type; }
