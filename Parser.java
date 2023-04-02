@@ -21,7 +21,7 @@ public class Parser{
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
             SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
-            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43, COLON=44, FUNCT=45;
+            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43, COLON=44, FUNCT=45, WHILE=46;
 
     Expression current;
     String current_type;
@@ -115,10 +115,13 @@ public class Parser{
 
                 }
             }
-
             return out;
         }
     }
+
+    
+    
+    private ArrayList<Expression> BODY()
 
 
     private FuncNode FUNC(ArrayList<Expression> expressions) throws ParsingError{ // handles functions.
@@ -138,8 +141,8 @@ public class Parser{
             Expression first = expressions.get(0);
             int ln = first.getNo();
 
-            return_type = new Symbol(first.popFirst().getRepr(),ln);   // grab function return type, name.
-            name = new Symbol(first.popFirst().getRepr(),ln);
+            return_type = new Symbol(ln, first.popFirst().getRepr());   // grab function return type, name.
+            name = new Symbol(ln, first.popFirst().getRepr());
 
             if (first.popLast().getType()!=COLON){
                 throw new ParsingError(ln, "Function missing colon.");
@@ -148,7 +151,7 @@ public class Parser{
                 for (Expression e : expressions){
                     function_body.add(EXPR(e));      // load function body from expressions.
                 }
-                return FuncNode(ln, name, return_type, function_args, function_body);
+                return new FuncNode(ln, name, return_type, function_args, function_body);
             }
             
         } catch(Exception e){
@@ -157,7 +160,33 @@ public class Parser{
     }
 
 
-    private ExprNode EXPR(Expression expr){
+    private ExprNode EXPR(Expression expr){ 
+
+        // one line expresion (unop, binop etc)
+
+        int ln = expr.getNo();
+
+        try { 
+            if (expr.size()==1){ // length 1 implies expression is a constant
+                return CONST(expr.pop(0));
+            }
+            if (expr.size()==2){
+                return UNOP(expr); // length 2 implies unary operator.
+            }
+            if (expr.size()==3){
+                return BINOP(expr); // length 3 implies binary operator.
+            }
+        } catch (Exception e){
+            throw new ParsingError(ln, "simple expr error");
+        }
+    }
+
+
+    private ExprNode complex_EXPR(Expression expr, ArrayList<Expression> body){
+
+        // expression with attached {} body. (IF,WHILE,SWITCH)
+
+        int ln = expr.getNo();
 
         try {
             if (expr.size()==1){
@@ -167,13 +196,13 @@ public class Parser{
                 int top = expr.pop(0).getType();
 
                 if (top==IF){
-                    return IF(expr.getNo(),expr);
+                    return IF(ln,expr,body);
                 }
                 if (top==SWITCH){
-                    return SWTCH(expr.getNo(),expr);
+                    return SWTCH(ln,expr,body);
                 }
                 if (top==WHILE){
-                    return WHLE(expr.getNo(),expr);
+                    return WHILE(ln,expr,body);
                 }
                
             }
@@ -185,7 +214,9 @@ public class Parser{
     
     }
 
-    private Node CONST(Token t) throws ParsingError { // int, float, string, boolean constants.
+
+
+    private ConstNode CONST(Token t) throws ParsingError { // int, float, string, boolean constants.
 
         int no = t.getNo();
 
@@ -215,23 +246,27 @@ public class Parser{
     }
 
 
-    private Node IF(int no, Expression cond, ArrayList<Expression> body){
-        
+    private Node IF(int no, ArrayList<Expression> exprs){
+ 
         ExprNode cond_node;
         ArrayList<ExprNode> body_nodes;
 
         try {
+            Expression first = exprs.get(0);
+            if (first.popLast().getType()==COLON){
+                if (first.popFirst().getType()==LEFTPAR && first.popLast().getType()==RIGHTPAR){
 
-            cond_node = EXPR(cond);
-            body_nodes = DELIM(body);
-            return new IfNode(cond, )
-        }
+                    cond_node = EXPR(first);
 
-        if (expr.popFirst().getType()==LEFTPAR && expr.popLast().getType==RIGHTPAR){
+                    return new IfNode(no, cond_node, body_nodes);
+                }
+            }
+            throw new ParsingError(no, "Malformed if expression.");
             
-        } else {
-            throw new ParsingError(no, "Parantheses missing.")
+        } catch (Exception e ){
+            throw new ParsingError(no, "Error at IF()");
         }
+
     }
 
 
@@ -239,11 +274,11 @@ public class Parser{
 
         ExprNode cn = EXPR(cond);
         
-        ArrayList<ExprNode> body = new ArrayList<ExprNode>();
+        ArrayList<ExprNode> body_out = new ArrayList<ExprNode>();
         for (Expression expr_raw : body){
-            body.add(EXPR(expr_raw));
+            body_out.add(EXPR(expr_raw));
         }
-        return new WhileNode(no, cond, body);
+        return new WhileNode(no, cn, body_out);
     }
 
 

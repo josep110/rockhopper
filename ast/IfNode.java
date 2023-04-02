@@ -8,17 +8,15 @@ public class IfNode extends ExprNode{ // if x
     private ArrayList<ExprNode> elifBranch;
     private ArrayList<ExprNode> elseBranch;
 
-    public IfNode(int no, ExprNode condition, ArrayList<ExprNode> ifBranch, ArrayList<ExprNode> elseBranch){
+    public IfNode(int no, ExprNode condition, ArrayList<ExprNode> ifBranch){
         super(no);
         this.condition = condition;
         this.ifBranch = ifBranch;
     }
 
+    public void addElif(ArrayList<ExprNode> elifBranch){ this.elifBranch = elifBranch; }
 
-
-    public void addElif(ArrayList<ExprNode> expr){ this.elifBranch = expr; }
-
-    public void addElse(ArrayList<ExprNode> expr){ this.elseBranch = expr; }
+    public void addElse(ArrayList<ExprNode> elseBranch){ this.elseBranch = elseBranch; }
 
     public ExprNode getCond(){ return condition; }
     

@@ -1,6 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
-import java.ast.*;
+import ast.*;
 
 public class Frontend{
 
@@ -10,7 +10,7 @@ public class Frontend{
         Parser pars;
         TopLevelNode ast;
 
-        Semantic sem;
+       // Semantic sem;
         Node an_ast;
 
         if (args.length == 0) { System.out.println("Usage: java Frontend {codefile}");}
@@ -18,8 +18,8 @@ public class Frontend{
             ArrayList<Expression> lines = lex.readThrough(args[0]); // tokenize input file. 
             pars = new Parser(lines);
             ast = pars.generateAST();
-            sem = new Semantic(ast);
-            an_ast = Semantic.getAnnotatedAST();
+            //sem = new Semantic(ast);
+            //an_ast = Semantic.getAnnotatedAST();
         
         }
             

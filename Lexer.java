@@ -23,14 +23,12 @@ class Lexer{
             DATA=1, KEYWORDS=2, PUNCT=3, IDENT=4, BINOPER=5, UNOPER=6, ID=7;
 
 
-    // Keyword type IDs
-
     public static final int 
-            INT=1, STRING=2, FLOAT=3, BOOLEAN=4, LEFTPAR=5, RIGHTPAR=6, LEFTBR=7, RIGHTBR=8,
+            NULL=0, INT=1, STRING=2, FLOAT=3, BOOLEAN=4, LEFTPAR=5, RIGHTPAR=6, LEFTBR=7, RIGHTBR=8,
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
             SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
-            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT=43, COLON=44;
+            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43, COLON=44, FUNCT=45, WHILE=46;
  
     Lexer() throws IOException{
         code = new String[0][0];
@@ -85,6 +83,7 @@ class Lexer{
             case "if": return new Token(IF, KEYWORDS, repr,ln);
             case "elif": return new Token(ELIF, KEYWORDS, repr,ln);
             case "else": return new Token(ELSE, KEYWORDS, repr,ln);
+            case "while": return new Token(WHILE, KEYWORDS, repr, ln);
 
             case ":": return new Token(COLON, DATA, repr, ln);
             case "+": return new Token(PLUS, BINOPER, repr,ln);
