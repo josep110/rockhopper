@@ -1,5 +1,4 @@
 package ast;
-import ast.ExprNode;
 
 public abstract class BinOperatorNode extends ExprNode{ // +, -, /, * etc.
 

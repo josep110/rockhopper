@@ -1,15 +1,12 @@
-import java.util.regex.Pattern;
-//import java.lang.Integer;
 
 class Token{
     
     private int type;
     private int group;
     private String repr;
-    private boolean term;
     private int no;
     
-    Token(int type, int group, String repr, int ln){
+    public Token(int type, int group, String repr, int no){
         this.type = type;
         this.group = group;
         this.repr = repr;
@@ -22,5 +19,8 @@ class Token{
 
     public String getRepr(){ return this.repr; }
 
-    public String toString(){ return "Type: " + this.type + " \t Repr: " + this.repr + " \t Line no. : " + Integer.toString(this.ln); }
+    public String toString(){ return "Type: " + this.type + " \t Repr: " + this.repr + " \t Line no. : " + Integer.toString(this.no); }
+
+    public int getNo(){ return this.no; }
+
 }

@@ -1,22 +1,22 @@
 import java.util.ArrayList;
 
-class Expression{
+class Expression{ // this class is an internal representation of coded expressions in Rockhopper - these are individual for each line within .rkh syntax.
 
 
-    int no;
-    ArrayList<Token> contained;
-    int length;
+    int no;                         // line number
+    ArrayList<Token> contained;     // tokens contained by this expression.
+    int length;                     // expression length
     
 
-    Expression(int no){ this.no=no; this.contained = new ArrayList<Token>(); this.length = 0; }
-
-    Expression(int no, ArrayList<Token> contained){ this.no = no; this.contained = contained; length = contained.size(); }
+    Expression(int no){ this.no=no; this.contained = new ArrayList<Token>(); this.length = 0; }                             // blank constructor
+ 
+    Expression(int no, ArrayList<Token> contained){ this.no = no; this.contained = contained; length = contained.size(); }  // constructor w/ precooked contained array
 
     public int size(){ return length; }
 
     public void add(Token t){ contained.add(t); length++; }
 
-    public Token pop(int i){
+    public Token pop(int i){   // pops next token from internal array, reduces overall length.
         if (i < length){
             length--; 
             Token out = contained.get(i);
@@ -53,17 +53,19 @@ class Expression{
         return pop(this.length-1);
     }
 
-    public Expression subExpr(int s, int e){
+    public Expression subExpr(int s, int e){ // returns part of expression.
 
+        ArrayList<Token> new_contained = new ArrayList<Token>();
         try {
-            ArrayList<Token> new_contained = new ArrayList<Token>();
             for (;s < e;s++){
                 new_contained.add(contained.get(s));
             }
-            return(new Expression(this.no, new_contained));
+            
         } catch (Exception exc){
             System.out.println(exc);
         }
+        return(new Expression(this.no, new_contained));
+
     }
 
     public ArrayList<Expression> split(int type){    // Splits expression at given token type.

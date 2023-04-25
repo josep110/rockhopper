@@ -4,7 +4,7 @@ import java.util.*;
 public class Parser{
 
 
-    Node ast;
+    TopLevelNode ast;
     Iterator<Expression> iter_Expressions;
 
     Parser(ArrayList<Expression> expressions){
@@ -21,7 +21,7 @@ public class Parser{
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
             SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
-            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43, COLON=44, FUNCT=45, WHILE=46;
+            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43, COLON=44, FUNCT=45, WHILE=46, MAIN=47;
 
     Expression current;
     String current_type;
@@ -31,8 +31,9 @@ public class Parser{
     final String[] terminals = new String[]{"var","+","-","/","*","(","{",")","}",
     "==","<",">","^","%",">>","<<","&","~","#","!","if"};
 
-    Node generateAST(ArrayList<Expression> expressions){
-        Node ast = TOP(expressions, new TopLevelNode(0));
+    TopLevelNode generateAST() throws ParsingError{
+        
+        return TOP(iter_Expressions, ast);
 
     }   
     
@@ -40,43 +41,70 @@ public class Parser{
 
 // recursive descent.
 
-    private Node TOP(ArrayList<Expression> exprs, Node ast) throws ParsingError{ // handles program overall.
-        boolean parsingFunct = false;
-        ArrayList<Token> functionTokens = new ArrayList<Token>();
+    private TopLevelNode TOP(Iterator<Expression> expressions, TopLevelNode newAST) throws ParsingError{ // handles program overall.
 
-        ArrayList<Expression> function_exprs = new ArrayList<Expression>();
+        int status = 0;             // 0 = none, 1 = function, 2 = main
+        boolean mainFound = false;
 
-        TopLevelNode newAST = new TopLevelNode(0);
+        ArrayList<Expression> cur_exprs = new ArrayList<Expression>();          // current batch of expressions for function / main routine
         Expression current;
+        Token first;
+        int first_t;
 
-        Iterator<Expression> expressions = exprs.iterator();
-
-        while (expressions.hasNext()){
-            current = expressions.next();
+        while (expressions.hasNext()){              // reads through program file, picks out functions / main routine.
             
-            if (parsingFunct){                     // if currently reading within function...
-                
-                    if (current.pop(0).getType()==FUNCT){                      // if another function token is found -> new function entered.
-                        newAST.add(FUNC(function_exprs));                      // pass to function handler.
-                        function_exprs = new ArrayList<Expression>();         // clear functionTokens.
+            current = expressions.next();
+            first = current.pop(0);
+
+            if (first!=null){ // null first token -> empty line.
+
+                first_t = first.getType();
+                if (first_t == FUNCT){          // expression is a function header
+
+
+                    if (status==2){                                     // new function entered after main
+                        newAST.add(MAIN(cur_exprs));                    // publish new main with set of expressions.
+                        cur_exprs = new ArrayList<Expression>();        // clear set of expressions.
                     }
-                    else {
-                        function_exprs.add(current);   
+
+
+                    if (status==1){          // new function entered after prev. function
+                        newAST.add(FUNC(cur_exprs));
+                        cur_exprs = new ArrayList<Expression>();
                     }
-                
-            } else {
-                if (current.pop(0).getType()==FUNCT){   // checks if first token in current Expression is function declaration.
-                    parsingFunct = true;
-                } else {
-                    throw new ParsingError(current.getNo(),"Functions allowed only.");
-                }                                                
+
+                    status = 1;                 // parsing status = function
+                } 
+                if (first_t == MAIN){           // expression is a main routine header
+
+                    if (mainFound){
+                        throw new ParsingError(current.getNo(), "Only one main routine allowed.");
+                    } else {
+
+                        newAST.add(FUNC(cur_exprs));                    // publish new function with set of expressions.
+                        cur_exprs = new ArrayList<Expression>();        // clear set of expressions.
+                        
+                        status = 2;             // parsing status = main
+                        mainFound = true;
+                    }
+                }
+                cur_exprs.add(current);
             }
         }
+
+        if (!mainFound){
+            throw new ParsingError(0, "No main routine provided.");
+        }
+
+        if (status==0){ throw new ParsingError(0, "No functions or main method provided."); }
+        else { if (status==1){ newAST.add(FUNC(cur_exprs)); } 
+        else { if (status==2){ newAST.add(MAIN(cur_exprs)); } } }
+
         return newAST;
     }
 
 
-    private ArrayList<ExprNode> DELIM(Expression expr){ // handles delimited expressions (function arguments etc.)
+    private ArrayList<ExprNode> DELIM(Expression expr) throws ParsingError{ // handles delimited expressions (function arguments etc.)
  
 
         int ln = expr.getNo();
@@ -89,24 +117,25 @@ public class Parser{
         } else {
 
             boolean expect_type = true;           // prevents type declarations being given without variable declaration.
-            int current_type = first.getType();
-            Token next;
-            Expression var_decl;
+            int current_type = first.getType();   // stores current selected token type
+            Token next;                           // stores next token in stream   
+            Expression var_decl;                  // variables to be declared with chained type (i.e. int a, b, c, d)
 
             for (int i = 0; i < expr.size();i++){
 
                 next = expr.peek(i);
+                var_decl = new Expression(ln);
 
                 if (next.getGroup()==TYPE_ID){
+                    
                     if (!expect_type){
                       out.add(EXPR(var_decl));      // send variables(s) to be initialised to EXPR method.
                     }
-                    var_decl = new Expression(ln);
                     var_decl.add(next);
                     current_type=next.getType();
                     expect_type = true;
                 }
-                else{
+                else {
                     if(next.getGroup()==IDENT && !expect_type){
                         var_decl.add(next);
                     } else {
@@ -121,12 +150,33 @@ public class Parser{
 
     
     
-    private ArrayList<Expression> BODY()
+   // private ArrayList<Expression> BODY(){}
 
+   private MainNode MAIN(ArrayList<Expression> expressions) throws ParsingError{ // handles main routine.
+    
+        try {
 
-    private FuncNode FUNC(ArrayList<Expression> expressions) throws ParsingError{ // handles functions.
-        boolean parsing_args = false;
-        boolean parsing_body = false;
+            ArrayList<ExprNode> body = new ArrayList<ExprNode>();
+            Expression first = expressions.get(0);
+            int ln = first.getNo();
+
+            if (first.popLast().getType()!=COLON){
+                throw new ParsingError(ln, "Function missing colon.");
+            } else {
+                for (Expression e : expressions){
+                    body.add(EXPR(e));                 // load main routine body from expressions.
+                }
+                return new MainNode(ln, body);
+            }
+            
+        } catch(Exception e){
+            throw new ParsingError(expressions.get(0).getNo(), "Error found while parsing. (FUNC)");
+        }    
+   
+
+   }
+
+   private FuncNode FUNC(ArrayList<Expression> expressions) throws ParsingError{ // handles functions.
 
         // analyse first function expression.
 
@@ -160,63 +210,33 @@ public class Parser{
     }
 
 
-    private ExprNode EXPR(Expression expr){ 
+    private ExprNode EXPR(Expression expr) throws ParsingError{ 
 
-        // one line expresion (unop, binop etc)
-
-        int ln = expr.getNo();
-
-        try { 
-            if (expr.size()==1){ // length 1 implies expression is a constant
-                return CONST(expr.pop(0));
-            }
-            if (expr.size()==2){
-                return UNOP(expr); // length 2 implies unary operator.
-            }
-            if (expr.size()==3){
-                return BINOP(expr); // length 3 implies binary operator.
-            }
-        } catch (Exception e){
-            throw new ParsingError(ln, "simple expr error");
-        }
-    }
-
-
-    private ExprNode complex_EXPR(Expression expr, ArrayList<Expression> body){
-
-        // expression with attached {} body. (IF,WHILE,SWITCH)
+        // expresion (unop, binop etc)
 
         int ln = expr.getNo();
+        int size = expr.size();
 
         try {
-            if (expr.size()==1){
+            
+            if (size==1){                       // const
                 return CONST(expr.pop(0));
-            } else {
-
-                int top = expr.pop(0).getType();
-
-                if (top==IF){
-                    return IF(ln,expr,body);
-                }
-                if (top==SWITCH){
-                    return SWTCH(ln,expr,body);
-                }
-                if (top==WHILE){
-                    return WHILE(ln,expr,body);
-                }
-               
+            }
+            if (size==2){                       // unary operator
+                return UNOP(ln, expr);
+            }
+            if (size==3){                       // binary operator
+                return BINOP(ln, expr);
             }
 
-        } catch(Exception e){
-            throw new ParsingError(-1, "within EXPR"); // change this later.
+        } catch (Exception e){
+            throw new ParsingError(ln, "Runtime error at EXPR");
         }
-
-    
+        throw new ParsingError(ln, "Unrecognised Expression");
     }
 
 
-
-    private ConstNode CONST(Token t) throws ParsingError { // int, float, string, boolean constants.
+    private ConstNode<?> CONST(Token t) throws ParsingError { // int, float, string, boolean constants.
 
         int no = t.getNo();
 
@@ -226,19 +246,19 @@ public class Parser{
             String repr = t.getRepr();
 
             if (type==INT){
-                return new ConstNode(no, type, Integer.parseInt(repr));
+                return new ConstNode<Integer>(no, type, Integer.parseInt(repr));
             }
             if (type==FLOAT){
-                return new ConstNode(no, type, Double.parseDouble(repr));
+                return new ConstNode<Double>(no, type, Double.parseDouble(repr));
             }
             if (type==STRING){
-                return new ConstNode(no, type, repr);
+                return new ConstNode<String>(no, type, repr);
             }
             if (type==BOOLEAN){
-                if (repr=="true"){ return new ConstNode(no, type, true); }
-                else { return new ConstNode(no, type, false); }
+                if (repr=="true"){ return new ConstNode<Boolean>(no, type, true); }
+                else { return new ConstNode<Boolean>(no, type, false); }
             }
-            return new ConstNode(no, 0, null);
+            return new ConstNode<>(no, 0, null);
 
         } catch(Exception e) {
             throw new ParsingError(no, "Error at CONST()");
@@ -246,10 +266,10 @@ public class Parser{
     }
 
 
-    private Node IF(int no, ArrayList<Expression> exprs){
+    private Node IF(int no, ArrayList<Expression> exprs) throws ParsingError{
  
         ExprNode cond_node;
-        ArrayList<ExprNode> body_nodes;
+        ArrayList<ExprNode> body_nodes = new ArrayList<ExprNode>();
 
         try {
             Expression first = exprs.get(0);
@@ -270,45 +290,36 @@ public class Parser{
     }
 
 
-    private WhileNode WHILE(int no, Expression cond, ArrayList<Expression> body){
+    // private SwitchNode SWTCH(int no, Expression cond, ArrayList<Expression> branches) throws ParsingError{
 
-        ExprNode cn = EXPR(cond);
-        
-        ArrayList<ExprNode> body_out = new ArrayList<ExprNode>();
-        for (Expression expr_raw : body){
-            body_out.add(EXPR(expr_raw));
-        }
-        return new WhileNode(no, cn, body_out);
-    }
+    //     ExprNode cn = EXPR(cond);
 
+    //     SwitchNode out = new SwitchNode(no, cn);
+    //     for (Expression branch_Ex : branches){
 
-    private SwitchNode SWTCH(int no, Expression cond, ArrayList<Expression> branches){
-
-        ExprNode cn = EXPR(cond);
-
-        SwitchNode out = new SwitchNode(no, cn);
-        for (Expression branch_Ex : branches){
-
-            if(branch_Ex.popFirst().getType()==CASE){
-                ArrayList<Expression> split_exp = branch_Ex.split(COLON);
+    //         if(branch_Ex.popFirst().getType()==CASE){
+    //             ArrayList<Expression> split_exp = branch_Ex.split(COLON);
                
-                ExprNode br_cond = EXPR(split_exp.get(0));
-                ExprNode br_body = EXPR(split_exp.get(1));
+    //             ExprNode br_cond = EXPR(split_exp.get(0));
+    //             ExprNode br_body = EXPR(split_exp.get(1));
 
-                out.addBranch(new CaseNode(no, br_cond, br_body));
-            } else {
-                throw new ParsingError(no, "Missing keyword {case}");
-            }
+    //             out.addBranch(new CaseNode(no, br_cond, br_body));
+    //         } else {
+    //             throw new ParsingError(no, "Missing keyword {case}");
+    //         }
             
-        }
-        return out;
-    }
+    //     }
+    //     return out;
+    // }
 
 
-    private BinOperatorNode BINOP(int type, int no, Expression expr_raw){ // handle binary operators.
+    private BinOperatorNode BINOP(int no, Expression expr_raw) throws ParsingError{ // handle binary operators.
 
         ExprNode expr1 = EXPR(expr_raw.subExpr(0,1));
         ExprNode expr2 = EXPR(expr_raw.subExpr(2,3));
+
+        int type = expr_raw.pop(0).getType();
+
 
         if(expr1.getType()!=expr2.getType()){
             throw new ParsingError(no, "Binop Operand mismatch.");
@@ -357,9 +368,10 @@ public class Parser{
                 return new XorNode(no, expr1, expr2);
             }
         }
+        throw new ParsingError(no, "Unrecognised Binop");
     }
 
-    private Node UNOP(int no, Expression expr){
+    private NotNode UNOP(int no, Expression expr) throws ParsingError{
         return new NotNode(no, EXPR(expr));
     }
 

@@ -1,16 +1,16 @@
 package ast;
 
 public abstract class ExprNode extends Node { // 
-    private Symbol type;
+    private int type;
 
     protected ExprNode(int no){ super(no); }
 
-    public boolean setType(Symbol type){
+    public boolean setType(int type){
         this.type = type;
         return true;
     }
 
-    public Symbol getType(){
+    public int getType(){
         return this.type;
     }
 

@@ -19,5 +19,11 @@ public class IfNode extends ExprNode{ // if x
     public void addElse(ArrayList<ExprNode> elseBranch){ this.elseBranch = elseBranch; }
 
     public ExprNode getCond(){ return condition; }
-    
+
+    public ArrayList<ExprNode> getIf(){ return this.ifBranch; }
+
+    public ArrayList<ExprNode> getElif(){ return this.elifBranch; }
+
+    public ArrayList<ExprNode> getElse(){ return this.elseBranch; }
+
 }

@@ -28,7 +28,7 @@ class Lexer{
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
             SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_ID=34, COMMA=36,
-            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43, COLON=44, FUNCT=45, WHILE=46;
+            SEMICOLON=37, IDENTIFIER=38, INT_ID=39, FLOAT_ID=40, STRING_ID=41, BOOL_ID=42, FUNCT_ID=43, COLON=44, FUNCT=45, WHILE=46, MAIN=47;
  
     Lexer() throws IOException{
         code = new String[0][0];
@@ -63,15 +63,15 @@ class Lexer{
             return out;
     }
 
-    private static String[] add(String[] existing, String neu){
+    // private static String[] add(String[] existing, String neu){
 
-        int len = existing.length;
-        String[] out = new String[len+1];
-        for (int i = 0; i < len; i++){ out[i] = existing[i]; }
-        out[len] = neu;
-        return out;
+    //     int len = existing.length;
+    //     String[] out = new String[len+1];
+    //     for (int i = 0; i < len; i++){ out[i] = existing[i]; }
+    //     out[len] = neu;
+    //     return out;
 
-    }
+    // }
 
     private Token getToken(Pattern p, String repr, int ln){
         String re = p.pattern();
@@ -84,6 +84,7 @@ class Lexer{
             case "elif": return new Token(ELIF, KEYWORDS, repr,ln);
             case "else": return new Token(ELSE, KEYWORDS, repr,ln);
             case "while": return new Token(WHILE, KEYWORDS, repr, ln);
+            case "main": return new Token(MAIN, KEYWORDS,repr,ln);
 
             case ":": return new Token(COLON, DATA, repr, ln);
             case "+": return new Token(PLUS, BINOPER, repr,ln);
@@ -136,8 +137,6 @@ class Lexer{
 
     public ArrayList<Expression> readThrough(String file) throws IOException{  // method for 'lexing' input file.
 
-            String candidate;
-
             int pattern_i;
             int pattern_l;
             int word_l;
@@ -154,13 +153,9 @@ class Lexer{
             Matcher m;
             String matching;
 
-            boolean valid;
-
             Expression current;
             
             // for each line in code, for each word in line, compare to patterns.
-
-            valid = true;
 
             for (int no = 0; no < code.length; no++){
 
@@ -183,7 +178,7 @@ class Lexer{
 
                                 matching = w.substring(start,end);
                                 
-                                current.addTo(getToken(p,matching,no+1));
+                                current.add(getToken(p,matching,no+1));
 
                                 w = w.substring(0,start) + " " + w.substring(end,word_l); 
                                 word_l = w.length();

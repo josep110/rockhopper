@@ -4,7 +4,7 @@ import ast.*;
 
 public class Frontend{
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException, ParsingError{
 
         Lexer lex = new Lexer();
         Parser pars;
