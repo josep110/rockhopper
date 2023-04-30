@@ -1,5 +1,10 @@
-function test(int i, int j) :
-    return i+j 
+function string _test(string s, string x):
+    return "st"+"ore"+s 
 
-function test2(String s):
-    return s
+function int _test2(int x):
+    if(x>5): return x
+    else: return 5 
+
+main :
+    int x = _test (2,2) 
+    int y = _test (x,40)

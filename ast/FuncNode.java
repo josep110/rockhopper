@@ -6,18 +6,18 @@ public class FuncNode extends Node {  // func(x){}
 
     private Symbol name;
     private Symbol returnType;
-    private ArrayList<ExprNode> args;
+    private ArrayList<RefNode> args;
     private ArrayList<ExprNode> body;
 
     public Symbol getName(){ return name; }
 
     public Symbol getReturn(){ return returnType; }
 
-    public ArrayList<ExprNode> getArgs(){ return args; }
+    public ArrayList<RefNode> getArgs(){ return args; }
 
     public ArrayList<ExprNode> getBody(){ return body; }
 
-    public FuncNode(int no, Symbol name, Symbol returnType, ArrayList<ExprNode> args, ArrayList<ExprNode> body){
+    public FuncNode(int no, Symbol name, Symbol returnType, ArrayList<RefNode> args, ArrayList<ExprNode> body){
         super(no);
         this.name = name;
         this.returnType = returnType;
