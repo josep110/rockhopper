@@ -114,12 +114,12 @@ public class Parser{
     }
 
 
-    private ArrayList<RefNode> DELIM(Expression expr) throws ParsingError{ // handles delimited expressions (function arguments etc.)
+    private ArrayList<ArgNode> DELIM(Expression expr) throws ParsingError{ // handles delimited expressions (function arguments etc.)
 
         boolean expect_comma = false;
 
         int ln = expr.getNo();
-        ArrayList<RefNode> out = new ArrayList<RefNode>();
+        ArrayList<ArgNode> out = new ArrayList<ArgNode>();
         
         Symbol currentType;
         Symbol currentId;
@@ -147,7 +147,7 @@ public class Parser{
             } 
             currentId = new Symbol(ln, currentId_tok.getRepr());
 
-            out.add(new RefNode(ln, currentType, currentId));
+            out.add(new ArgNode(ln, currentType, currentId));
 
             expect_comma = true;
 
@@ -155,8 +155,6 @@ public class Parser{
         return out;
     }
 
-    
-   // private ArrayList<Expression> BODY(){}
 
    private MainNode MAIN(ArrayList<Expression> expressions) throws ParsingError{ // handles main routine.
     
@@ -192,7 +190,7 @@ public class Parser{
         Token return_type_tok;
         Token id_token;
 
-        ArrayList<RefNode> function_args = new ArrayList<RefNode>();
+        ArrayList<ArgNode> function_args = new ArrayList<ArgNode>();
         ArrayList<ExprNode> function_body = new ArrayList<ExprNode>();
 
         //System.out.println(expressions);
@@ -238,8 +236,6 @@ public class Parser{
                 function_args = DELIM(header);
             }
 
-            
-
             return new FuncNode(ln, id, return_type, function_args, function_body);
 
 
@@ -250,23 +246,41 @@ public class Parser{
     }
 
 
-    private ExprNode EXPR(Expression expr) throws ParsingError{ 
+    private ExprNode EXPR(Expression expr) throws ParsingError{  // Expression -> ExprNode
 
-        // expresion (unop, binop etc)
-
+        
         int ln = expr.getNo();
         int size = expr.size();
 
         System.out.println(expr);
+
+        Token prev;
 
         try {
             
             Token first = expr.popFirst();
             int first_g = first.getGroup();
 
-            if (first_g==DATA){ return CONST(first, expr.popFirst()); }
-            if (first_g==IDENTIFIER){ return REF(first);}
-            if (first_g==TYPE){ return DECL(first); }
+            if (expr.size()==1){
+                if (first_g==DATA){ return CONST(ln, first); }
+                if (first_g==IDENTIFIER){ return REF(ln, first); }
+                throw new ParsingError(ln, "Incomplete expression."); }
+            
+            
+            if (first_g==IDENTIFIER){ 
+                return ASSIGN(first, expr.popFirst(), EXPR(expr));
+            }
+
+            // handle binary operators recursively using this method
+
+            // if (first_g==BINOPER){
+            //     return BINOP(ln, )
+            // }
+        
+            
+            // if (first_g==TYPE){ 
+                
+            // }
 
 
 
@@ -280,7 +294,6 @@ public class Parser{
     private ConstNode<?> CONST(Token t) throws ParsingError { // int, float, string, boolean constants.
 
         int no = t.getNo();
-
         try {
             
             int type = t.getType();
@@ -304,6 +317,15 @@ public class Parser{
         } catch(Exception e) {
             throw new ParsingError(no, "Error at CONST()");
         }
+    }
+
+    private RefNode REF(int ln, Token id){
+        return new RefNode(ln, id.toSymbol());
+    }
+
+
+    private SetConstNode ASSIGN(int ln, Token type, Token id, Token value){
+        return new SetConstNode(ln, id )
     }
 
 
