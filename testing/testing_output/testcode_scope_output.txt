@@ -1,0 +1,6 @@
+[SymbolTableEntry] SYMBOL: x TYPE: 39
+[SymbolTableEntry] SYMBOL: y TYPE: 39
+
+subtables
+_test [[SymbolTableEntry] SYMBOL: s TYPE: 41, [SymbolTableEntry] SYMBOL: x TYPE: 41]
+_test2 [[SymbolTableEntry] SYMBOL: x TYPE: 39]

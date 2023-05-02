@@ -1,0 +1,5 @@
+function noType():
+    return 0
+
+main:
+    return noType()

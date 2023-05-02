@@ -1,0 +1,4 @@
+{add10=add10 [[SymbolTableEntry] SYMBOL: x TYPE: 39]}
+
+subtables
+add10 [[SymbolTableEntry] SYMBOL: x TYPE: 39]

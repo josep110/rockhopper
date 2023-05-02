@@ -1,0 +1,63 @@
+{function} ID: add RETURNTYPE: 1
+	ARGS: [
+		{Arg} TYPE: 39 NAME: x, 
+		{Arg} TYPE: 39 NAME: y]
+	BODY: [
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x]
+
+
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x
+{function} ID: sub RETURNTYPE: 1
+	ARGS: [
+		{Arg} TYPE: 39 NAME: x, 
+		{Arg} TYPE: 39 NAME: y]
+	BODY: [
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x]
+
+
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x
+{function} ID: mult RETURNTYPE: 1
+	ARGS: [
+		{Arg} TYPE: 39 NAME: x, 
+		{Arg} TYPE: 39 NAME: y]
+	BODY: [
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x]
+
+
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x
+{function} ID: divide RETURNTYPE: 1
+	ARGS: [
+		{Arg} TYPE: 39 NAME: x, 
+		{Arg} TYPE: 39 NAME: y]
+	BODY: [
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x]
+
+
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x
+{main}  BODY: [
+		{ConstAssign}  ID: x TYPE: 39 VALUE: 
+				{CONST} TYPE: 1 VALUE: 10, 
+		{ConstAssign}  ID: y TYPE: 39 VALUE: 
+				{CONST} TYPE: 1 VALUE: 5, 
+		{ConstAssign}  ID: z TYPE: 39 VALUE: 
+			{Reference} ID: mult]
+
+
+		{ConstAssign}  ID: x TYPE: 39 VALUE: 
+				{CONST} TYPE: 1 VALUE: 10
+
+
+		{ConstAssign}  ID: y TYPE: 39 VALUE: 
+				{CONST} TYPE: 1 VALUE: 5
+
+
+		{ConstAssign}  ID: z TYPE: 39 VALUE: 
+			{Reference} ID: mult

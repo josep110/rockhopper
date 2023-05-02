@@ -1,0 +1,27 @@
+{function} ID: yesOrNo RETURNTYPE: 2
+	ARGS: [
+		{Arg} TYPE: 39 NAME: x]
+	BODY: [
+		{If} COND: 
+			{Reference} ID: x
+		{If} BRANCH: 
+			{Return} TYPE: 2 RETURNS: 
+				{CONST} TYPE: 2 VALUE: yes, 
+			{Return} TYPE: 2 RETURNS: 
+				{CONST} TYPE: 2 VALUE: no]
+
+
+		{If} COND: 
+			{Reference} ID: x
+		{If} BRANCH: 
+			{Return} TYPE: 2 RETURNS: 
+				{CONST} TYPE: 2 VALUE: yes
+
+
+			{Return} TYPE: 2 RETURNS: 
+				{CONST} TYPE: 2 VALUE: no
+{main}  BODY: [
+			{Reference} ID: yesOrNo]
+
+
+			{Reference} ID: yesOrNo

@@ -1,5 +1,6 @@
 package src;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Expression{ // this class is an internal representation of coded expressions in Rockhopper - these are individual for each line within .rkh syntax.
 
@@ -87,6 +88,10 @@ public class Expression{ // this class is an internal representation of coded ex
         return out;
 
     }  
+
+    public Iterator<Token> iterator(){
+        return this.contained.iterator();
+    }
 
     public String toString(){
         String out = "";

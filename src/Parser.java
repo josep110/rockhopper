@@ -1,7 +1,7 @@
 package src;
-import ast.*;
-
 import java.util.*;
+
+import nodes.*;
 
 public class Parser{
 
@@ -23,7 +23,7 @@ public class Parser{
             IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
             SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
             AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_TAG=34, COMMA=36,
-            SEMICOLON=37, IDENTIFIER=38, INT_TAG=39, FLOAT_TAG=40, STRING_TAG=41, BOOL_TAG=42, FUNCT_TAG=43, COLON=44, FUNCT=45, WHILE=46, MAIN=47;
+            SEMICOLON=37, IDENTIFIER=38, INT_TAG=39, FLOAT_TAG=40, STRING_TAG=41, BOOL_TAG=42, FUNCT_TAG=43, COLON=44, FUNCT=45, WHILE=46, MAIN=47, ASSIGN=48;
 
     Expression current;
     String current_type;
@@ -62,13 +62,12 @@ public class Parser{
 
                 first = current.peek(0);
                 first_t = first.getType();
-                System.out.println(first);
-                System.out.println(first_t);
  
                 if (first_t == FUNCT){          // expression is a function header
 
 
-                    if (status==2){                                     // new function entered after main
+                    if (status==2){   
+                                 // new function entered after main
                         newAST.add(MAIN(cur_exprs));                    // publish new main with set of expressions.
                         cur_exprs = new ArrayList<Expression>();        // clear set of expressions.
                     }
@@ -107,58 +106,19 @@ public class Parser{
         }
 
         if (status==0){ throw new ParsingError(0, "No functions or main method provided."); }
-        else { if (status==1){ newAST.add(FUNC(cur_exprs)); } 
-        else { if (status==2){ newAST.add(MAIN(cur_exprs)); } } }
+        if (status==1){ ast.add(FUNC(cur_exprs)); }
+        if (status==2){ ast.add(MAIN(cur_exprs)); }
 
         return newAST;
     }
 
 
-    private ArrayList<ArgNode> DELIM(Expression expr) throws ParsingError{ // handles delimited expressions (function arguments etc.)
-
-        boolean expect_comma = false;
-
-        int ln = expr.getNo();
-        ArrayList<ArgNode> out = new ArrayList<ArgNode>();
-        
-        Symbol currentType;
-        Symbol currentId;
-
-        Token currentType_tok;
-        Token currentId_tok;
-
-        while (!expr.empty()){
-
-            if (expect_comma){
-                if (expr.popFirst().getType()!=COMMA){
-                    throw new ParsingError(ln, "Arguments must be seperated with commas.");
-                }
-            }
-            
-            currentType_tok = expr.popFirst();
-            if (currentType_tok.getGroup()!=TYPE){ 
-                throw new ParsingError(ln, "Argument type not declared.");
-            } 
-            currentType = new Symbol(ln, currentType_tok.getRepr());
-
-            currentId_tok = expr.popFirst();
-            if (currentId_tok.getType()!=IDENTIFIER){ 
-                throw new ParsingError(ln, "Argument id not declared.");
-            } 
-            currentId = new Symbol(ln, currentId_tok.getRepr());
-
-            out.add(new ArgNode(ln, currentType, currentId));
-
-            expect_comma = true;
-
-        }
-        return out;
-    }
 
 
    private MainNode MAIN(ArrayList<Expression> expressions) throws ParsingError{ // handles main routine.
     
         try {
+
 
             ArrayList<ExprNode> body = new ArrayList<ExprNode>();
             Expression first = expressions.get(0);
@@ -167,6 +127,7 @@ public class Parser{
             if (first.popLast().getType()!=COLON){
                 throw new ParsingError(ln, "Main missing colon.");
             } else {
+                expressions.remove(0);
                 for (Expression e : expressions){
                     body.add(EXPR(e));                 // load main routine body from expressions.
                 }
@@ -185,7 +146,7 @@ public class Parser{
         // analyze first function expression.
 
         Symbol id;
-        Symbol return_type;
+        int return_type;
 
         Token return_type_tok;
         Token id_token;
@@ -193,7 +154,6 @@ public class Parser{
         ArrayList<ArgNode> function_args = new ArrayList<ArgNode>();
         ArrayList<ExprNode> function_body = new ArrayList<ExprNode>();
 
-        //System.out.println(expressions);
 
         try {
 
@@ -215,7 +175,7 @@ public class Parser{
             if (return_type_tok.getGroup()!=TYPE){
                 throw new ParsingError(ln, "Missing return type");
             }
-            return_type = return_type_tok.toSymbol();
+            return_type = toTypeInt(return_type_tok.toSymbol());
 
 
             id_token = header.popFirst();
@@ -232,17 +192,65 @@ public class Parser{
                 throw new ParsingError(ln, "Missing argument opener.");
             }
 
+           // System.out.println(header);
+
             if (!header.empty()){
-                function_args = DELIM(header);
+                function_args = ARGS(header);
             }
 
+            // loading function body
+
+            expressions.remove(0);
+            for (Expression e : expressions){ function_body.add(EXPR(e)); }
+
             return new FuncNode(ln, id, return_type, function_args, function_body);
-
-
 
         } catch(Exception e){
             throw new ParsingError(expressions.get(0).getNo(), e.getMessage());
         }    
+    }
+
+    
+    private ArrayList<ArgNode> ARGS(Expression expr) throws ParsingError{ // handles function arguments
+
+        boolean expect_comma = false;
+
+        int ln = expr.getNo();
+        ArrayList<ArgNode> out = new ArrayList<ArgNode>();
+        
+        int currentType;
+        Symbol currentId;
+
+        Token currentType_tok;
+        Token currentId_tok;
+
+        while (!expr.empty()){
+
+            if (expect_comma){
+                if (expr.popFirst().getType()!=COMMA){
+                    throw new ParsingError(ln, "Arguments must be seperated with commas.");
+                }
+            }
+            
+            currentType_tok = expr.popFirst();
+
+            if (currentType_tok.getGroup()!=TYPE){ 
+                throw new ParsingError(ln, "Argument type not declared.");
+            } 
+            currentType = currentType_tok.getType();
+
+            currentId_tok = expr.popFirst();
+            if (currentId_tok.getType()!=IDENTIFIER){ 
+                throw new ParsingError(ln, "Argument id not declared.");
+            } 
+            currentId = new Symbol(ln, currentId_tok.getRepr());
+
+            out.add(new ArgNode(ln, currentType, currentId));
+
+            expect_comma = true;
+
+        }
+        return out;
     }
 
 
@@ -252,41 +260,85 @@ public class Parser{
         int ln = expr.getNo();
         int size = expr.size();
 
-        System.out.println(expr);
+        //System.out.println(expr);
 
-        Token prev;
+        final int expect_lhs=1, expect_rhs=2, done=3;
+
+        int status = expect_lhs;
+
+        Token current = null;
+        Token prev = null; // for multi - part expressions (binop, assign)
+        Token next = null;
+
+        ExprNode lhs = null;
+        ExprNode rhs = null;
+        ExprNode candidate = null;  // expr before sorting to lhs/rhs
+
+        int operator = 0;
+
+        int current_g;
+
+        ExprNode out;
 
         try {
-            
-            Token first = expr.popFirst();
-            int first_g = first.getGroup();
+        
+            while (!expr.empty()){
 
-            if (expr.size()==1){
-                if (first_g==DATA){ return CONST(ln, first); }
-                if (first_g==IDENTIFIER){ return REF(ln, first); }
-                throw new ParsingError(ln, "Incomplete expression."); }
-            
-            
-            if (first_g==IDENTIFIER){ 
-                return ASSIGN(first, expr.popFirst(), EXPR(expr));
+                current = expr.popFirst();
+                current_g = current.getGroup();
+
+                //System.out.println(current_g);
+
+                if(current_g==KEYWORDS){
+                    if(current.getType()==RETURN){
+                        out = EXPR(expr);
+                        return new ReturnNode(ln, out);
+                    }
+                    if(current.getType()==IF){
+                        return IF(ln, expr);
+                    }
+                    
+                  //  if(current.getType()==ELSE){} 
+
+                }
+
+                if (current_g==DATA){ candidate = CONST(current); } // to be sorted into lhs or rhs
+                if (current_g==TYPE){ prev = current; }
+                if (current_g==IDENT){ 
+                    if (prev==null){
+                        return new RefNode(ln, current.toSymbol());
+                    }
+                    
+                    if (expr.popFirst().getType()!=ASSIGN){
+                        throw new ParsingError(ln, "Const assignment missing '='");
+                    }
+
+                    return ASSIGN(ln, new DeclNode(ln, current.toSymbol(), prev.getType()), EXPR(expr));
+
+                }
+                if (current_g==BINOPER){ operator = current.getType(); }
+
+                if (status==expect_lhs){
+                    lhs = candidate;
+                    status = expect_rhs;
+                    continue;
+                }
+
+                if (status==expect_rhs){
+                    rhs = candidate;
+                    status = expect_lhs;
+                    return BINOP(ln, operator, lhs, rhs);
+                    
+                }
+
             }
 
-            // handle binary operators recursively using this method
-
-            // if (first_g==BINOPER){
-            //     return BINOP(ln, )
-            // }
-        
-            
-            // if (first_g==TYPE){ 
-                
-            // }
-
-
-
         } catch (Exception e){
-            throw new ParsingError(ln, "Runtime error at EXPR");
+            throw e;
         }
+        if (candidate!=null){ return candidate; }
+
+        //System.out.println(current);
         throw new ParsingError(ln, "Unrecognised Expression");
     }
 
@@ -319,35 +371,38 @@ public class Parser{
         }
     }
 
-    private RefNode REF(int ln, Token id){
-        return new RefNode(ln, id.toSymbol());
+    
+    private SetConstNode ASSIGN(int ln, DeclNode lhs, ExprNode rhs) throws ParsingError{
+       
+        return new SetConstNode(ln, lhs, rhs);
     }
 
 
-    private SetConstNode ASSIGN(int ln, Token type, Token id, Token value){
-        return new SetConstNode(ln, id )
-    }
-
-
-    private Node IF(int no, ArrayList<Expression> exprs) throws ParsingError{
+    private IfNode IF(int no, Expression expr) throws ParsingError{
  
-        ExprNode cond_node;
-        ArrayList<ExprNode> body_nodes = new ArrayList<ExprNode>();
-
         try {
-            Expression first = exprs.get(0);
-            if (first.popLast().getType()==COLON){
-                if (first.popFirst().getType()==LEFTPAR && first.popLast().getType()==RIGHTPAR){
 
-                    cond_node = EXPR(first);
+            ArrayList<Expression> split = expr.split(COLON);
 
-                    return new IfNode(no, cond_node, body_nodes);
-                }
+            Expression lhs = split.get(0);
+            Expression rhs = split.get(1);
+
+            // handle lhs
+
+            if (lhs.popFirst().getType()!=LEFTPAR){ 
+                throw new ParsingError(no, "IF statement missing opening parantheses.");
+            } 
+            
+            if (lhs.popLast().getType()!=RIGHTPAR){
+                throw new ParsingError(no, "IF statement missing closing parantheses.");
             }
-            throw new ParsingError(no, "Malformed if expression.");
+
+            ArrayList<ExprNode> rhs_arr = new ArrayList<ExprNode>();
+            rhs_arr.add(EXPR(rhs));
+            return new IfNode(no, EXPR(lhs), rhs_arr);
             
         } catch (Exception e ){
-            throw new ParsingError(no, "Error at IF()");
+            throw new ParsingError(no, e.getMessage());
         }
 
     }
@@ -376,12 +431,12 @@ public class Parser{
     // }
 
 
-    private BinOperatorNode BINOP(int no, Expression expr_raw) throws ParsingError{ // handle binary operators.
+    private BinOperatorNode BINOP(int no, int type, ExprNode expr1, ExprNode expr2) throws ParsingError{ // handle binary operators.
 
-        ExprNode expr1 = EXPR(expr_raw.subExpr(0,1));
-        ExprNode expr2 = EXPR(expr_raw.subExpr(2,3));
+        // ExprNode expr1 = EXPR(expr_raw.subExpr(0,1));
+        // ExprNode expr2 = EXPR(expr_raw.subExpr(2,3));
 
-        int type = expr_raw.pop(0).getType();
+        // int type = expr_raw.pop(0).getType();
 
 
         if(expr1.getType()!=expr2.getType()){
@@ -436,6 +491,19 @@ public class Parser{
 
     private NotNode UNOP(int no, Expression expr) throws ParsingError{
         return new NotNode(no, EXPR(expr));
+    }
+
+    private int toTypeInt(Symbol s) throws ParsingError{
+
+        int ln = s.getNo();
+        
+        switch (s.getName()){
+            case "int": return 1;
+            case "string": return 2;
+            case "float": return 3;
+            case "boolean": return 4;
+        }
+        throw new ParsingError(ln, "Unrecognised return type.");
     }
 
 }

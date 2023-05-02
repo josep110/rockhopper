@@ -1,0 +1,9 @@
+[SymbolTableEntry] SYMBOL: x TYPE: 39
+[SymbolTableEntry] SYMBOL: y TYPE: 39
+[SymbolTableEntry] SYMBOL: z TYPE: 39
+
+subtables
+add [[SymbolTableEntry] SYMBOL: x TYPE: 39, [SymbolTableEntry] SYMBOL: y TYPE: 39]
+sub [[SymbolTableEntry] SYMBOL: x TYPE: 39, [SymbolTableEntry] SYMBOL: y TYPE: 39]
+mult [[SymbolTableEntry] SYMBOL: x TYPE: 39, [SymbolTableEntry] SYMBOL: y TYPE: 39]
+divide [[SymbolTableEntry] SYMBOL: x TYPE: 39, [SymbolTableEntry] SYMBOL: y TYPE: 39]

@@ -1,0 +1,5 @@
+Exception in thread "main" src.ParsingError: Parsing Error at line 1 : Parsing Error at line 1 : Missing return type
+	at src.Parser.FUNC(Parser.java:209)
+	at src.Parser.TOP(Parser.java:90)
+	at src.Parser.generateAST(Parser.java:38)
+	at testParser.main(testParser.java:25)

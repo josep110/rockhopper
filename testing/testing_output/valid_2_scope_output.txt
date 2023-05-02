@@ -1,0 +1,4 @@
+{yesOrNo=yesOrNo [[SymbolTableEntry] SYMBOL: x TYPE: 39]}
+
+subtables
+yesOrNo [[SymbolTableEntry] SYMBOL: x TYPE: 39]

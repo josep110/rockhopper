@@ -1,0 +1,6 @@
+function string yesOrNo():
+    if (x < 10): return "yes"
+    return "no"
+
+main:
+    yesOrNo(11)

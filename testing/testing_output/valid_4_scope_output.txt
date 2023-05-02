@@ -1,0 +1,10 @@
+Exception in thread "main" java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:248)
+	at java.base/java.util.Objects.checkIndex(Objects.java:372)
+	at java.base/java.util.ArrayList.get(ArrayList.java:459)
+	at src.Parser.FUNC(Parser.java:209)
+	at src.Parser.TOP(Parser.java:90)
+	at src.Parser.generateAST(Parser.java:38)
+	at rockhopper.main(rockhopper.java:42)

@@ -1,0 +1,11 @@
+function string _test(string s, string x):
+    return "st"+"ore"+s 
+
+function int _test2(int x):
+    if(x>5) : return x
+    if(y): return 5
+    return 10 
+
+main :
+    int x = _test2(2,2) 
+    int y = _test2(x,40)

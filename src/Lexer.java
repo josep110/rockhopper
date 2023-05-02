@@ -57,7 +57,7 @@ public class Lexer {
         String current = br.readLine();
 
         while (current!=null){
-            current = current + " ";
+            current = " " + current + " ";
             out.add(current);
             current = br.readLine();
         }
@@ -148,7 +148,7 @@ public class Lexer {
                     if (word.equals("return")){ tokenArr.add(new Token(RETURN, KEYWORDS, word, ln)); }
                     if (word.equals("if")){ tokenArr.add(new Token(IF, KEYWORDS, word, ln)); }
                     if (word.equals("else")){ tokenArr.add(new Token(ELSE, KEYWORDS, word, ln)); }
-                    running = next();
+                    //running = next();
                     continue;
 
                 }
@@ -159,7 +159,7 @@ public class Lexer {
                     if (word.equals("float")){ tokenArr.add(new Token(FLOAT_TAG, TYPE, word, ln)); }
                     if (word.equals("string")){ tokenArr.add(new Token(STRING_TAG, TYPE, word, ln)); }
                     if (word.equals("boolean")){ tokenArr.add(new Token(BOOL_TAG, TYPE, word, ln)); }
-                    running = next();
+                    //running = next();
                     continue;
 
                 }

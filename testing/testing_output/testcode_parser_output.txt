@@ -1,0 +1,64 @@
+{function} ID: _test RETURNTYPE: 2
+	ARGS: [
+		{Arg} TYPE: 41 NAME: s, 
+		{Arg} TYPE: 41 NAME: x]
+	BODY: [
+			{Return} TYPE: 0 RETURNS: 
+			{Add} EXPR1 : 
+				{CONST} TYPE: 2 VALUE: st EXPR2: 
+				{CONST} TYPE: 2 VALUE: st
+]
+
+
+			{Return} TYPE: 0 RETURNS: 
+			{Add} EXPR1 : 
+				{CONST} TYPE: 2 VALUE: st EXPR2: 
+				{CONST} TYPE: 2 VALUE: st
+
+{function} ID: _test2 RETURNTYPE: 1
+	ARGS: [
+		{Arg} TYPE: 39 NAME: x]
+	BODY: [
+		{If} COND: 
+			{Reference} ID: x
+		{If} BRANCH: 
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x, 
+		{If} COND: 
+			{Reference} ID: y
+		{If} BRANCH: 
+			{Return} TYPE: 1 RETURNS: 
+				{CONST} TYPE: 1 VALUE: 5, 
+			{Return} TYPE: 1 RETURNS: 
+				{CONST} TYPE: 1 VALUE: 10]
+
+
+		{If} COND: 
+			{Reference} ID: x
+		{If} BRANCH: 
+			{Return} TYPE: 0 RETURNS: 
+			{Reference} ID: x
+
+
+		{If} COND: 
+			{Reference} ID: y
+		{If} BRANCH: 
+			{Return} TYPE: 1 RETURNS: 
+				{CONST} TYPE: 1 VALUE: 5
+
+
+			{Return} TYPE: 1 RETURNS: 
+				{CONST} TYPE: 1 VALUE: 10
+{main}  BODY: [
+		{ConstAssign}  ID: x TYPE: 39 VALUE: 
+			{Reference} ID: _test2, 
+		{ConstAssign}  ID: y TYPE: 39 VALUE: 
+			{Reference} ID: _test2]
+
+
+		{ConstAssign}  ID: x TYPE: 39 VALUE: 
+			{Reference} ID: _test2
+
+
+		{ConstAssign}  ID: y TYPE: 39 VALUE: 
+			{Reference} ID: _test2

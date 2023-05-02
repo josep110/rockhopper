@@ -1,0 +1,5 @@
+function int add10(int x):
+    return 10+x
+
+main:
+    return add10(6)

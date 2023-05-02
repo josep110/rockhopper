@@ -1,0 +1,31 @@
+package nodes;
+import java.util.ArrayList;
+
+public class IfNode extends ExprNode{ // if x
+
+    protected ExprNode condition;
+    private ArrayList<ExprNode> ifBranch;
+    private ArrayList<ExprNode> elifBranch;
+    private ArrayList<ExprNode> elseBranch;
+
+    public IfNode(int no, ExprNode condition, ArrayList<ExprNode> ifBranch){
+        super(no);
+        this.condition = condition;
+        this.ifBranch = ifBranch;
+    }
+
+    public void addElif(ArrayList<ExprNode> elifBranch){ this.elifBranch = elifBranch; }
+
+    public void addElse(ArrayList<ExprNode> elseBranch){ this.elseBranch = elseBranch; }
+
+    public ExprNode getCond(){ return condition; }
+
+    public ArrayList<ExprNode> getIf(){ return this.ifBranch; }
+
+    public ArrayList<ExprNode> getElif(){ return this.elifBranch; }
+
+    public ArrayList<ExprNode> getElse(){ return this.elseBranch; }
+
+    public String toString(){ return "\n\t\t{If} COND: " + this.condition +  "\n\t\t{If} BRANCH: " + this.ifBranch.get(0);  }
+
+}

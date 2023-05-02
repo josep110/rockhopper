@@ -1,0 +1,4 @@
+Type: 47 	 Repr: main 	 Line no. : 1
+Type: 44 	 Repr: : 	 Line no. : 1
+Type: 14 	 Repr: return 	 Line no. : 2
+Type: 1 	 Repr: 10 	 Line no. : 2

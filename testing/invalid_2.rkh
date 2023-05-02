@@ -1,0 +1,8 @@
+function int give10():
+    return 10;
+
+main:
+    give10();
+
+main:
+    give10();

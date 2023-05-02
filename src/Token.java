@@ -1,5 +1,5 @@
 package src;
-import ast.Symbol;
+import nodes.Symbol;
 
 public class Token{
     
