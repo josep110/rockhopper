@@ -1,0 +1,9 @@
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+	at java.base/java.util.Arrays.copyOf(Arrays.java:3720)
+	at java.base/java.util.Arrays.copyOf(Arrays.java:3689)
+	at java.base/java.util.ArrayList.grow(ArrayList.java:238)
+	at java.base/java.util.ArrayList.grow(ArrayList.java:243)
+	at java.base/java.util.ArrayList.add(ArrayList.java:486)
+	at java.base/java.util.ArrayList.add(ArrayList.java:499)
+	at src.Lexer.run(Lexer.java:166)
+	at testLexer.main(testLexer.java:20)
