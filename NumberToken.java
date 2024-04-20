@@ -1,3 +1,0 @@
-class NumberToken extends Token{
-    
-}

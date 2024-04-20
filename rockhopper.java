@@ -46,8 +46,8 @@ public class rockhopper {
             symbol_tables = scoper.generateTables(ast);
             System.out.println(symbol_tables);
 
-           // typer = new TypeChecker(symbol_tables);
-            //System.out.println(typer.check(ast));
+            typer = new TypeChecker(symbol_tables);
+            System.out.println(typer.check(ast));
 
             // Code generation
 
