@@ -13,6 +13,11 @@ public class FuncNode extends Node {  // func(x){}
 
     public int getReturn(){ return returnType; }
 
+   // public int getReturnTag(){
+     //   int returnPure = this.getReturn();
+
+    //}
+
     public ArrayList<ArgNode> getArgs(){ return args; }
 
     public ArrayList<ExprNode> getBody(){ return body; }

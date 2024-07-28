@@ -6,7 +6,8 @@ public class ElifNode extends IfNode{ // elif x
     private IfNode preceeder;
 
     public ElifNode(int no, ExprNode condition, ArrayList<ExprNode> ifBranch, ArrayList<ExprNode> elseBranch, IfNode preceeder){
-        super(no, condition, ifBranch, elseBranch);
+        // elseBranch, preceeder not used.
+        super(no, condition, ifBranch);
         this.preceeder = preceeder; 
     }
 

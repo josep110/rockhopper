@@ -11,7 +11,7 @@ public class TypeChecker {
         this.mainTable = mainTable;
     }
 
-    public boolean check(TopLevelNode ast) throws SemanticError{
+     public boolean check(TopLevelNode ast) throws SemanticError{
         return checkTOP(ast);
     }
     
@@ -51,34 +51,30 @@ public class TypeChecker {
 
     private int checkEXPR(ExprNode e, int expected, Symbol function_id) throws SemanticError{
 
-        if (e instanceof ReturnNode){
-            ReturnNode r = (ReturnNode) e;
+        if (e instanceof ReturnNode r){
 
             int returned_type = checkEXPR(r.getReturn(), 0, function_id);
 
             if (returned_type!=expected){ throw new SemanticError(r.getNo(), "Returned type does not match function return type."); }
             return expected;
         }
-        if (e instanceof SetConstNode){
-            SetConstNode scn = (SetConstNode) e;
+        if (e instanceof SetConstNode scn){
             int assign_type = checkASSIGN(scn, expected, function_id);
             if(assign_type==-2){ throw new SemanticError(scn.getNo() , "Type mismatch in Const Assignment."); }
             return assign_type;
         }
-        if (e instanceof BinOperatorNode){
-            BinOperatorNode bon = (BinOperatorNode) e;
+        if (e instanceof BinOperatorNode bon){
             int binop_type = checkBINOP(bon);
             if (checkBINOP(bon)==-2){ throw new SemanticError(bon.getNo() , "Type mismatch in Binary Operation ."); }
             return binop_type;
         }
-        if (e instanceof RefNode){
-            
-            RefNode r = (RefNode) e;
-            System.out.println(r);
+        if (e instanceof RefNode r){
+
+            //System.out.println(r);
             SymbolTable table = mainTable.getSubtable(function_id);
-            System.out.println(table);
+           // System.out.println(table);
             int ref_type = table.lookup(r.getId());
-            System.out.println(ref_type);            
+           // System.out.println(ref_type);
 
             if (ref_type==-1){ // if not found in SymbolTable ... 
                 SymbolTable subtable = mainTable.getSubtable(r.getId());

@@ -27,7 +27,7 @@ public class rockhopper {
         MainSymbolTable symbol_tables;
 
 
-        if (args.length == 0) { System.out.println("Usage: java Frontend {codefile} {destination}");}
+        if (args.length == 0) { System.out.println("Usage: java rockhopper {codefile} {destination}");}
         else { 
             
             String programNode = args[0];
@@ -50,6 +50,8 @@ public class rockhopper {
             System.out.println(typer.check(ast));
 
             // Code generation
+
+
 
             //generator = new CodeGenerator(programName, args[1], ast);
             

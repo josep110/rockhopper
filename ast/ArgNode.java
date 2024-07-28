@@ -2,7 +2,7 @@ package ast;
 
 public class ArgNode extends ExprNode {
 
-    Symbol name;
+    Symbol id;
     Symbol type;
 
     public ArgNode(int ln, Symbol type, Symbol id){

@@ -119,7 +119,6 @@ public class Parser{
     
         try {
 
-
             ArrayList<ExprNode> body = new ArrayList<ExprNode>();
             Expression first = expressions.get(0);
             int ln = first.getNo();
@@ -280,62 +279,54 @@ public class Parser{
 
         ExprNode out;
 
-        try {
-        
-            while (!expr.empty()){
+        while (!expr.empty()){
 
-                current = expr.popFirst();
-                current_g = current.getGroup();
+            current = expr.popFirst();
+            current_g = current.getGroup();
 
-                //System.out.println(current_g);
+            //System.out.println(current_g);
 
-                if(current_g==KEYWORDS){
-                    if(current.getType()==RETURN){
-                        out = EXPR(expr);
-                        return new ReturnNode(ln, out);
-                    }
-                    if(current.getType()==IF){
-                        return IF(ln, expr);
-                    }
-                    
-                  //  if(current.getType()==ELSE){} 
-
+            if(current_g==KEYWORDS){
+                if(current.getType()==RETURN){
+                    out = EXPR(expr);
+                    return new ReturnNode(ln, out);
+                }
+                if(current.getType()==IF){
+                    return IF(ln, expr);
                 }
 
-                if (current_g==DATA){ candidate = CONST(current); } // to be sorted into lhs or rhs
-                if (current_g==TYPE){ prev = current; }
-                if (current_g==IDENT){ 
-                    if (prev==null){
-                        return new RefNode(ln, current.toSymbol());
-                    }
-                    
-                    if (expr.popFirst().getType()!=ASSIGN){
-                        throw new ParsingError(ln, "Const assignment missing '='");
-                    }
-
-                    return ASSIGN(ln, new DeclNode(ln, current.toSymbol(), prev.getType()), EXPR(expr));
-
-                }
-                if (current_g==BINOPER){ operator = current.getType(); }
-
-                if (status==expect_lhs){
-                    lhs = candidate;
-                    status = expect_rhs;
-                    continue;
-                }
-
-                if (status==expect_rhs){
-                    rhs = candidate;
-                    status = expect_lhs;
-                    return BINOP(ln, operator, lhs, rhs);
-                    
-                }
+              //  if(current.getType()==ELSE){}
 
             }
 
-        } catch (Exception e){
-            throw e;
+            if (current_g==DATA){ candidate = CONST(current); } // to be sorted into lhs or rhs
+            if (current_g==TYPE){ prev = current; }
+            if (current_g==IDENT){
+                if (prev==null){
+                    return new RefNode(ln, current.toSymbol());
+                }
+
+                if (expr.popFirst().getType()!=ASSIGN){
+                    throw new ParsingError(ln, "Const assignment missing '='");
+                }
+
+                return ASSIGN(ln, new DeclNode(ln, current.toSymbol(), prev.getType()), EXPR(expr));
+
+            }
+            if (current_g==BINOPER){ operator = current.getType(); }
+
+            if (status==expect_lhs){
+                lhs = candidate;
+                status = expect_rhs;
+                continue;
+            }
+
+            rhs = candidate;
+            status = expect_lhs;
+            return BINOP(ln, operator, lhs, rhs);
+
         }
+
         if (candidate!=null){ return candidate; }
 
         //System.out.println(current);
@@ -496,14 +487,14 @@ public class Parser{
     private int toTypeInt(Symbol s) throws ParsingError{
 
         int ln = s.getNo();
-        
-        switch (s.getName()){
-            case "int": return 1;
-            case "string": return 2;
-            case "float": return 3;
-            case "boolean": return 4;
-        }
-        throw new ParsingError(ln, "Unrecognised return type.");
+
+        return switch (s.getName()) {
+            case "int" -> 1;
+            case "string" -> 2;
+            case "float" -> 3;
+            case "boolean" -> 4;
+            default -> throw new ParsingError(ln, "Unrecognised return type.");
+        };
     }
 
 }
