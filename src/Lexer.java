@@ -8,22 +8,6 @@ import java.util.Iterator;
 
 public class Lexer {
 
-    // Token groups
-
-    public static final int
-            DATA=1, KEYWORDS=2, PUNCT=3, IDENT=4, BINOPER=5, UNOPER=6, TYPE=8;
-
-    // Token types
-
-    public static final int 
-            NULL=0, INT=1, STRING=2, FLOAT=3, BOOLEAN=4, LEFTPAR=5, RIGHTPAR=6, LEFTBR=7, RIGHTBR=8,
-            IF=9, ELIF=10, ELSE=11, SWITCH=12, CASE=13, RETURN=14, PLUS=15, MINUS=16, GREATER=17,
-            SMALLER=18, EQUALS=19, MULTIPLY=20, DIVIDE=21, POWER=22, MODULO=23, BITRIGHT=24, BITLEFT=25,
-            AND=26, OR=27, XOR=28, NOT=29, LEFTBRACK=30, RIGHTBRACK=31, DECL=32, WHITE=33, TYPE_TAG=34, COMMA=36,
-            SEMICOLON=37, IDENTIFIER=38, INT_TAG=39, FLOAT_TAG=40, STRING_TAG=41, BOOL_TAG=42, FUNCT_ID=43, COLON=44, FUNCT=45, WHILE=46, MAIN=47,
-            ASSIGN=48;
-        
-
 
    int ln;                          // line number
    int i;                           // character index in current line
@@ -91,24 +75,24 @@ public class Lexer {
                 if (punct(current)){        // is current character punctuation?
 
                     
-                    if (current=='('){ tokenArr.add(new Token(LEFTPAR, PUNCT, String.valueOf(current), ln) ); }
-                    if (current==')'){ tokenArr.add(new Token(RIGHTPAR, PUNCT, String.valueOf(current), ln)); }
-                    if (current==':'){ tokenArr.add(new Token(COLON, PUNCT, String.valueOf(current), ln)); }
-                    if (current==','){ tokenArr.add(new Token(COMMA, PUNCT, String.valueOf(current), ln)); }
+                    if (current=='('){ tokenArr.add(new Token(TokenEnumeration.LEFTPAR, TokenEnumeration.PUNCT, String.valueOf(current), ln) ); }
+                    if (current==')'){ tokenArr.add(new Token(TokenEnumeration.RIGHTPAR, TokenEnumeration.PUNCT, String.valueOf(current), ln)); }
+                    if (current==':'){ tokenArr.add(new Token(TokenEnumeration.COLON, TokenEnumeration.PUNCT, String.valueOf(current), ln)); }
+                    if (current==','){ tokenArr.add(new Token(TokenEnumeration.COMMA, TokenEnumeration.PUNCT, String.valueOf(current), ln)); }
                     running = next();
                     continue;
                 }
 
                 if (operator(current)){  // is current character an operator?   
 
-                    if (current=='+'){ tokenArr.add(new Token(PLUS, BINOPER, String.valueOf(current), ln)); }
-                    if (current=='-'){ tokenArr.add(new Token(MINUS, BINOPER, String.valueOf(current), ln)); }
-                    if (current=='/'){ tokenArr.add(new Token(DIVIDE, BINOPER, String.valueOf(current), ln)); }
-                    if (current=='*'){ tokenArr.add(new Token(MULTIPLY, BINOPER, String.valueOf(current), ln)); }
-                    if (current=='='){ tokenArr.add(new Token(ASSIGN, BINOPER, String.valueOf(current), ln)); }
-                    if (current=='~'){ tokenArr.add(new Token(NOT, UNOPER, String.valueOf(current), ln)); }
-                    if (current=='>'){ tokenArr.add(new Token(GREATER, BINOPER, String.valueOf(current), ln)); }
-                    if (current=='<'){ tokenArr.add(new Token(SMALLER, BINOPER, String.valueOf(current), ln)); }
+                    if (current=='+'){ tokenArr.add(new Token(TokenEnumeration.PLUS, TokenEnumeration.BINOPER, String.valueOf(current), ln)); }
+                    if (current=='-'){ tokenArr.add(new Token(TokenEnumeration.MINUS, TokenEnumeration.BINOPER, String.valueOf(current), ln)); }
+                    if (current=='/'){ tokenArr.add(new Token(TokenEnumeration.DIVIDE, TokenEnumeration.BINOPER, String.valueOf(current), ln)); }
+                    if (current=='*'){ tokenArr.add(new Token(TokenEnumeration.MULTIPLY, TokenEnumeration.BINOPER, String.valueOf(current), ln)); }
+                    if (current=='='){ tokenArr.add(new Token(TokenEnumeration.ASSIGN, TokenEnumeration.BINOPER, String.valueOf(current), ln)); }
+                    if (current=='~'){ tokenArr.add(new Token(TokenEnumeration.NOT, TokenEnumeration.UNOPER, String.valueOf(current), ln)); }
+                    if (current=='>'){ tokenArr.add(new Token(TokenEnumeration.GREATER, TokenEnumeration.BINOPER, String.valueOf(current), ln)); }
+                    if (current=='<'){ tokenArr.add(new Token(TokenEnumeration.SMALLER, TokenEnumeration.BINOPER, String.valueOf(current), ln)); }
 
                     running = next();
                     continue;
@@ -119,12 +103,12 @@ public class Lexer {
                     String res = readNumber();   // read rest of number
                     if (res.length()>1){
                         if (res.charAt(0)=='f'){
-                            tokenArr.add(new Token(FLOAT, DATA, res.substring(1), ln));
+                            tokenArr.add(new Token(TokenEnumeration.FLOAT, TokenEnumeration.DATA, res.substring(1), ln));
                         } else {
-                            tokenArr.add(new Token(INT, DATA, res, ln));
+                            tokenArr.add(new Token(TokenEnumeration.INT, TokenEnumeration.DATA, res, ln));
                         }
                     } else {
-                        tokenArr.add(new Token(INT, DATA, res, ln));
+                        tokenArr.add(new Token(TokenEnumeration.INT, TokenEnumeration.DATA, res, ln));
                     }
 
                     continue;
@@ -132,7 +116,7 @@ public class Lexer {
                 if (string(current)){
 
                     running = next();
-                    tokenArr.add(new Token(STRING, DATA, readString('"'), ln));
+                    tokenArr.add(new Token(TokenEnumeration.STRING, TokenEnumeration.DATA, readString('"'), ln));
                     running = next();
                     continue;
                 }
@@ -143,11 +127,11 @@ public class Lexer {
  
                 if (keyword(word)){
 
-                    if (word.equals("function")){ tokenArr.add(new Token(FUNCT, KEYWORDS, word, ln)); }
-                    if (word.equals("main")){ tokenArr.add(new Token(MAIN, KEYWORDS, word, ln)); }
-                    if (word.equals("return")){ tokenArr.add(new Token(RETURN, KEYWORDS, word, ln)); }
-                    if (word.equals("if")){ tokenArr.add(new Token(IF, KEYWORDS, word, ln)); }
-                    if (word.equals("else")){ tokenArr.add(new Token(ELSE, KEYWORDS, word, ln)); }
+                    if (word.equals("function")){ tokenArr.add(new Token(TokenEnumeration.FUNCT, TokenEnumeration.KEYWORDS, word, ln)); }
+                    if (word.equals("main")){ tokenArr.add(new Token(TokenEnumeration.MAIN, TokenEnumeration.KEYWORDS, word, ln)); }
+                    if (word.equals("return")){ tokenArr.add(new Token(TokenEnumeration.RETURN, TokenEnumeration.KEYWORDS, word, ln)); }
+                    if (word.equals("if")){ tokenArr.add(new Token(TokenEnumeration.IF, TokenEnumeration.KEYWORDS, word, ln)); }
+                    if (word.equals("else")){ tokenArr.add(new Token(TokenEnumeration.ELSE, TokenEnumeration.KEYWORDS, word, ln)); }
                     //running = next();
                     continue;
 
@@ -155,15 +139,15 @@ public class Lexer {
 
                 if (type(word)){
 
-                    if (word.equals("int")){ tokenArr.add(new Token(INT_TAG, TYPE, word, ln)); }
-                    if (word.equals("float")){ tokenArr.add(new Token(FLOAT_TAG, TYPE, word, ln)); }
-                    if (word.equals("string")){ tokenArr.add(new Token(STRING_TAG, TYPE, word, ln)); }
-                    if (word.equals("boolean")){ tokenArr.add(new Token(BOOL_TAG, TYPE, word, ln)); }
+                    if (word.equals("int")){ tokenArr.add(new Token(TokenEnumeration.INT_TAG, TokenEnumeration.TYPE, word, ln)); }
+                    if (word.equals("float")){ tokenArr.add(new Token(TokenEnumeration.FLOAT_TAG, TokenEnumeration.TYPE, word, ln)); }
+                    if (word.equals("string")){ tokenArr.add(new Token(TokenEnumeration.STRING_TAG, TokenEnumeration.TYPE, word, ln)); }
+                    if (word.equals("boolean")){ tokenArr.add(new Token(TokenEnumeration.BOOL_TAG, TokenEnumeration.TYPE, word, ln)); }
                     //running = next();
                     continue;
 
                 }
-                tokenArr.add(new Token(IDENTIFIER, IDENT, word, ln));
+                tokenArr.add(new Token(TokenEnumeration.IDENTIFIER, TokenEnumeration.IDENT, word, ln));
                 
             }
             

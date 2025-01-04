@@ -41,6 +41,8 @@ public class rockhopper {
             pars = new Parser(lex.run());
             ast = pars.generateAST();
 
+            //System.out.println(ast.getFunctions());
+
             // Semantic Analysis
             scoper = new ScopeChecker();
             symbol_tables = scoper.generateTables(ast);

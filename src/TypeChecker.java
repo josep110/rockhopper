@@ -70,11 +70,9 @@ public class TypeChecker {
         }
         if (e instanceof RefNode r){
 
-            //System.out.println(r);
             SymbolTable table = mainTable.getSubtable(function_id);
-           // System.out.println(table);
+
             int ref_type = table.lookup(r.getId());
-           // System.out.println(ref_type);
 
             if (ref_type==-1){ // if not found in SymbolTable ... 
                 SymbolTable subtable = mainTable.getSubtable(r.getId());
@@ -105,10 +103,6 @@ public class TypeChecker {
 
         int declared = a.getType();
         int actual = checkEXPR(a.getValue(), expected, function_id);
-
-        System.out.println(a.getValue());
-        System.out.println(declared);
-        System.out.println(actual);
 
         if (declared!=actual){ return -2; }
         return declared;
